@@ -7,6 +7,10 @@
 <body>
 	<script type="text/javascript">
 		var socket;
+		let SPLIT = '$';
+		let LOGIN = 'login';
+		let SEND2USER = 'send2User';
+
 		if (!window.WebSocket) {
 			window.WebSocket = window.MozWebSocket;
 		}
@@ -15,12 +19,10 @@
 			socket.onmessage = function(event) {
 				console.log('Message received from server: ' + event.data);
 
-				document.getElementById("responseText").value = event.data;
+				document.getElementById("responseText").value += event.data + '\n';
 			};
 			socket.onopen = function(event) {
 				console.log('WebSocket connection opened. Ready to send messages.');
-
-				socket.send('Hello, from WebSocket client!');
 			};
 			socket.onclose = function(event) {
 				console.log('WebSocket connection closed.');
@@ -29,24 +31,49 @@
 			alert("你的浏览器不支持 WebSocket！");
 		}
 
+		function clear() {
+			document.getElementById("responseText").value = '';
+		}
+
 		function send(message) {
-			if (!window.WebSocket) {
-				return;
-			}
 			if (socket.readyState == WebSocket.OPEN) {
 				socket.send(message);
 			} else {
 				alert("连接没有开启.");
 			}
 		}
+
+		function login() {
+			user = {};
+			user.userName = document.getElementById("userName").value;
+			user.password = document.getElementById("password").value;
+			message = LOGIN + SPLIT + SPLIT + JSON.stringify(user);
+			console.log(message);
+			send(message);
+		}
+
+		function send2Person() {
+			userName = document.getElementById("aimUserName").value;
+			msg = document.getElementById("message").value;
+			message = SEND2USER + SPLIT + userName + SPLIT + msg;
+			console.log(message);
+			send(message);
+		}
 	</script>
 	<form onsubmit="return false;">
 		<h3>WebSocket 聊天室：</h3>
+		<input type="text" id="userName" style="width: 100px" value="">
+		<input type="text" id="password" style="width: 100px" value="">
+		<input type="button" value="登陆" onclick="login()">
 		<textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
-		<br> 
-		<input type="text" name="message"  style="width: 300px" value="">
-		<input type="button" value="发送消息" onclick="send(this.form.message.value)">
-		<input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空聊天记录">
+		<br>
+		发送给<input type="text" id="aimUserName" style="width: 100px">
+		<br>
+		内容<input type="text" id="message" style="width: 100px">
+		<br>
+		<input type="button" value="发送" onclick="send2Person()">
+		<input type="button" value="清空" onclick="clear()">
+		<br>
 	</form>
 	<br> 
 	<br> 
