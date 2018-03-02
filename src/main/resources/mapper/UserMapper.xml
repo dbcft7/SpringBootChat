@@ -14,6 +14,10 @@
             #{more_username}
         </foreach>
     </select>
+    
+    <select id=" id=findUserFromAccount" parameterType="String" resultType="User">
+        SELECT * FROM account where user.user_name=#{username}
+    </select>
 
 </mapper>
 

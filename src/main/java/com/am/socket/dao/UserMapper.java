@@ -8,4 +8,5 @@ import java.util.List;
 public interface UserMapper {
     User findUser(@Param("username") String userName);
     List<User> findMoreUser(List<String> moreUserName);
+    User findUserFromAccount(@Param("username") String username);
 }
