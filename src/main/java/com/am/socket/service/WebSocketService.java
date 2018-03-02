@@ -36,15 +36,19 @@ public class WebSocketService extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
-        String[] massage = textMessage.getPayload().split("$");
+        String[] massage = textMessage.getPayload().split("&");
         if(massage[0].equals("login")){
-            System.out.println("*************************"+massage[2]);
             User userLogin = JSON.parseObject(massage[2],User.class);
-            String username = userLogin.getUsername();
-            String password = userLogin.getUsername();
-            if(!handleLogin(username,password)) session.close();
+            String username = userLogin.getUserName();
+            String password = userLogin.getPassword();
+            if(!handleLogin(username,password)){
+                System.out.println("************************** login failed!");
+                session.close();
+            }
             else{
+                System.out.println("*************************"+massage[2]);
                 map.put(username,session);
+                session.sendMessage(new TextMessage("welcome to Chat!"));
             }
         }
         else if(massage[0].equals("send2User")){
@@ -52,7 +56,7 @@ public class WebSocketService extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage("the user is not exist!"));
             }
             WebSocketSession sendSession = map.get(massage[1]);
-            sendSession.sendMessage(textMessage);
+            sendSession.sendMessage(new TextMessage(massage[2]));
         }
         else{
             session.sendMessage(textMessage);
