@@ -15,7 +15,7 @@ public class UserService {
     private UserMapper userMapper;
 
     public String userExist(String username, String password) throws Exception {
-        User userinsql = userMapper.findUser(username);
+        User userinsql = userMapper.findUserFromAccount(username);
         String passwordHashed = Hash.encrypt(password);
 
         if(userinsql == null) return "the account is not exist!";
@@ -23,6 +23,18 @@ public class UserService {
             return "login successfully!";
         }else{
             return "password is wrong!";
+        }
+    }
+
+    public boolean findUserIsTrue(String username, String password) throws Exception{
+        User userinsql = userMapper.findUserFromAccount(username);
+        String passwordHashed = Hash.encrypt(password);
+
+        if(userinsql == null) return false;
+        else if(username.equals(userinsql.getUsername()) && passwordHashed.equals(userinsql.getPassword())){
+            return true;
+        }else{
+            return false;
         }
     }
 
