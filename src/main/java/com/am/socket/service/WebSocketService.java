@@ -1,7 +1,6 @@
 package com.am.socket.service;
 
 import com.alibaba.fastjson.JSON;
-import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -14,7 +13,6 @@ import java.util.*;
 public class WebSocketService extends TextWebSocketHandler {
 
     private List<WebSocketSession> sessionlist = new ArrayList<>();
-    private String[] userIdList = new String[] {"1","2","3"};
     private Map<String,WebSocketSession> map = new HashMap<>();
 
     @Resource
@@ -38,7 +36,6 @@ public class WebSocketService extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
-        //System.out.println("Message received from: " + textMessage.getPayload());
         String[] massage = textMessage.getPayload().split("$");
         if(massage[0].equals("login")){
             System.out.println("*************************"+massage[2]);
@@ -51,13 +48,11 @@ public class WebSocketService extends TextWebSocketHandler {
             }
         }
         else if(massage[0].equals("send2User")){
-            for(String s: userIdList) {
-                if (s.equals(massage[1])) {
-                    WebSocketSession sendSession = map.get(massage[1]);
-                    sendSession.sendMessage(textMessage);
-                    break;
-                }
+            if(map.get(massage[1]) == null){
+                session.sendMessage(new TextMessage("the user is not exist!"));
             }
+            WebSocketSession sendSession = map.get(massage[1]);
+            sendSession.sendMessage(textMessage);
         }
         else{
             session.sendMessage(textMessage);
