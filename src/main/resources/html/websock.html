@@ -10,6 +10,7 @@
 		let SPLIT = '&';
 		let LOGIN = 'login';
 		let SEND2USER = 'send2User';
+		let LOGINUSERS = 'loginUsers';
 
 		if (!window.WebSocket) {
 			window.WebSocket = window.MozWebSocket;
@@ -59,6 +60,13 @@
 			console.log(message);
 			send(message);
 		}
+
+		function checkLoginUsers() {
+			message = LOGINUSERS + SPLIT + SPLIT;
+			console.log(message);
+			send(message);
+		}
+
 	</script>
 	<form onsubmit="return false;">
 		<h3>WebSocket 聊天室：</h3>
@@ -66,6 +74,8 @@
         <input type="text" id="password" style="width: 100px" value="">
         <input type="button" value="登陆" onclick="login()">
 		<textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
+		<br>
+		<input type="button" value="查看已登陆的user" onclick="checkLoginUsers()">
 		<br>
 		发送给<input type="text" id="aimUserName" style="width: 100px">
 		<br>
