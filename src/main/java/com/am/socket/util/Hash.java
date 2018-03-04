@@ -1,7 +1,6 @@
-package com.am.socket.Util;
+package com.am.socket.util;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Hash {
     private static final char[] HEXES = {

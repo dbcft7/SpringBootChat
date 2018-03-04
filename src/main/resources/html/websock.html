@@ -10,7 +10,7 @@
 		let SPLIT = '&';
 		let LOGIN = 'login';
 		let SEND2USER = 'send2User';
-		let LOGINUSERS = 'loginUsers';
+		let LOGIN_USERS = 'loginUsers';
 
 		if (!window.WebSocket) {
 			window.WebSocket = window.MozWebSocket;
@@ -62,7 +62,7 @@
 		}
 
 		function checkLoginUsers() {
-			message = LOGINUSERS + SPLIT + SPLIT;
+			message = LOGIN_USERS + SPLIT + SPLIT;
 			console.log(message);
 			send(message);
 		}

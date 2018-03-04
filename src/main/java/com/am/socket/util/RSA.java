@@ -1,7 +1,6 @@
-package com.am.socket.Util;
+package com.am.socket.util;
 
 import javax.crypto.Cipher;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
