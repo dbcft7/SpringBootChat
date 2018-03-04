@@ -4,33 +4,18 @@ public class User {
     private String userName;
     private String password;
 
-    /**
-     *@return  password
-     */
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getPassword() {
         return password;
     }
 
-    /**
-     *
-     * @return username
-     */
-    public String getUsername() {
-        return userName;
-    }
-
-    /**
-     *
-     * @param username
-     */
-    public void setUsername(String username) {
-        this.userName = username;
-    }
-
-    /**
-     *
-     * @param password
-     */
     public void setPassword(String password) {
         this.password = password;
     }

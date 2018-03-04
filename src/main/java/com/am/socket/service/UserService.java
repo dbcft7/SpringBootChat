@@ -19,7 +19,7 @@ public class UserService {
         String passwordHashed = Hash.encrypt(password);
 
         if(userinsql == null) return "the account is not exist!";
-        else if(username.equals(userinsql.getUsername()) && passwordHashed.equals(userinsql.getPassword())){
+        else if(username.equals(userinsql.getUserName()) && passwordHashed.equals(userinsql.getPassword())){
             return "login successfully!";
         }else{
             return "password is wrong!";
@@ -28,10 +28,11 @@ public class UserService {
 
     public boolean findUserIsTrue(String username, String password) throws Exception{
         User userinsql = userMapper.findUserFromAccount(username);
-        String passwordHashed = Hash.encrypt(password);
 
-        if(userinsql == null) return false;
-        else if(username.equals(userinsql.getUsername()) && passwordHashed.equals(userinsql.getPassword())){
+        if(userinsql == null){
+            return false;
+        }
+        else if(username.equals(userinsql.getUserName()) && password.equals(userinsql.getPassword())){
             return true;
         }else{
             return false;
@@ -42,7 +43,7 @@ public class UserService {
         List<User> userList = userMapper.findMoreUser(username);
         List<String> user = new ArrayList<>();
         for(int i=0; i<userList.size(); i++){
-            user.add(userList.get(i).getUsername());
+            user.add(userList.get(i).getUserName());
         }
         return user;
     }

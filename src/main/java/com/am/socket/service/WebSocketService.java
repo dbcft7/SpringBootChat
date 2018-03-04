@@ -14,6 +14,7 @@ public class WebSocketService extends TextWebSocketHandler {
 
     private List<WebSocketSession> sessionlist = new ArrayList<>();
     private Map<String,WebSocketSession> map = new HashMap<>();
+    private Set<String> userList = new HashSet<>();
 
     @Resource
     private UserService user;
@@ -36,24 +37,43 @@ public class WebSocketService extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
-        String[] massage = textMessage.getPayload().split("$");
+        String[] massage = textMessage.getPayload().split("&");
+
+        // login
         if(massage[0].equals("login")){
-            System.out.println("*************************"+massage[2]);
             User userLogin = JSON.parseObject(massage[2],User.class);
-            String username = userLogin.getUsername();
-            String password = userLogin.getUsername();
-            if(!handleLogin(username,password)) session.close();
+            String username = userLogin.getUserName();
+            String password = userLogin.getPassword();
+            if(!handleLogin(username,password)){
+                System.out.println("************************** login failed!");
+                //userList.remove(username);
+                session.close();
+            }
             else{
+                System.out.println("*************************"+massage[2]);
+                userList.add(username);
                 map.put(username,session);
+                session.sendMessage(new TextMessage("welcome to Chat!"));
             }
         }
+
+        //send2User
         else if(massage[0].equals("send2User")){
             if(map.get(massage[1]) == null){
                 session.sendMessage(new TextMessage("the user is not exist!"));
             }
-            WebSocketSession sendSession = map.get(massage[1]);
-            sendSession.sendMessage(textMessage);
+            else{
+                WebSocketSession sendSession = map.get(massage[1]);
+                sendSession.sendMessage(new TextMessage(massage[2]));
+            }
         }
+
+        //findUserList
+        else if(massage[0].equals("loginUsers")){
+            //userList.toArray();
+            session.sendMessage(new TextMessage("loginUsers&&"+userList));
+        }
+
         else{
             session.sendMessage(textMessage);
         }
@@ -63,5 +83,5 @@ public class WebSocketService extends TextWebSocketHandler {
     private boolean handleLogin(String username, String password) throws Exception {
         return user.findUserIsTrue(username,password);
     }
-    
+
 }
