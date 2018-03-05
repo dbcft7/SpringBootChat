@@ -1,23 +1,16 @@
 package com.am.socket;
 
-import com.am.socket.Util.Hash;
-import com.am.socket.service.UserService;
+import com.am.socket.util.Hash;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.annotation.Resource;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 
-import static com.am.socket.Util.RSA.decrypt;
-import static com.am.socket.Util.RSA.encrypt;
-import static com.am.socket.Util.RSA.generateKeyPair;
-import static com.am.socket.Util.Hash.byte2Hex;
+import static com.am.socket.util.RSA.decrypt;
+import static com.am.socket.util.RSA.encrypt;
+import static com.am.socket.util.RSA.generateKeyPair;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = Application.class)

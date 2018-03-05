@@ -1,5 +1,5 @@
 package com.am.socket.service;
-import com.am.socket.Util.Hash;
+import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,11 @@ public class UserService {
     private UserMapper userMapper;
 
     public String userExist(String username, String password) throws Exception {
-        User userinsql = userMapper.findUserFromAccount(username);
+        User userFromDB = userMapper.findUserFromAccount(username);
         String passwordHashed = Hash.encrypt(password);
 
-        if(userinsql == null) return "the account is not exist!";
-        else if(username.equals(userinsql.getUserName()) && passwordHashed.equals(userinsql.getPassword())){
+        if(userFromDB == null) return "the account is not exist!";
+        else if(username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())){
             return "login successfully!";
         }else{
             return "password is wrong!";
@@ -32,7 +32,7 @@ public class UserService {
         if(userinsql == null){
             return false;
         }
-        else if(username.equals(userinsql.getUserName()) && password.equals(userinsql.getPassword())){
+        else if(username.equals(userinsql.getUsername()) && password.equals(userinsql.getPassword())){
             return true;
         }else{
             return false;
@@ -43,7 +43,7 @@ public class UserService {
         List<User> userList = userMapper.findMoreUser(username);
         List<String> user = new ArrayList<>();
         for(int i=0; i<userList.size(); i++){
-            user.add(userList.get(i).getUserName());
+            user.add(userList.get(i).getUsername());
         }
         return user;
     }
