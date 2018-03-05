@@ -19,7 +19,7 @@ public class WebSocketService extends TextWebSocketHandler {
     private static final String SPLIT = "&";
     private static final String LOGIN = "login";
     private static final String SEND2USER = "send2User";
-    private static final String LOGINUSERS = "loginUsers";
+    private static final String LOGIN_USERS = "loginUsers";
 
     @Resource
     private UserService user;
@@ -48,9 +48,9 @@ public class WebSocketService extends TextWebSocketHandler {
             handleLogin(session, message);
         } else if (message[0].equals(SEND2USER)) {
             handleSend2User(session, message);
-        } else if(message[0].equals(LOGINUSERS)){
+        } else if (message[0].equals(LOGIN_USERS)){
             handleLoginUsers(session);
-        } else{
+        } else {
             session.sendMessage(textMessage);
         }
 
@@ -88,7 +88,7 @@ public class WebSocketService extends TextWebSocketHandler {
             session.sendMessage(new TextMessage("You didn't login yet, please login first!"));
         } else {
             if (map.get(message[1]) == null) {
-                session.sendMessage(new TextMessage("the user "+message[1]+" is not exist!"));
+                session.sendMessage(new TextMessage("the user " + message[1] + " is not exist!"));
             } else {
                 WebSocketSession sendSession = map.get(message[1]);
                 sendSession.sendMessage(new TextMessage(message[2]));
@@ -98,7 +98,7 @@ public class WebSocketService extends TextWebSocketHandler {
 
     private void handleLoginUsers(WebSocketSession session) throws Exception {
         if (map.values().contains(session)){
-            session.sendMessage(new TextMessage("loginUsers&&"+map.keySet()));
+            session.sendMessage(new TextMessage(LOGIN_USERS + SPLIT + SPLIT + map.keySet()));
         } else {
             session.sendMessage((new TextMessage("You didn't login yet, please login first!")));
         }
