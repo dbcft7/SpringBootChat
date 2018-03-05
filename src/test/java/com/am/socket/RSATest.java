@@ -36,7 +36,7 @@ public class RSATest {
 
     @Test
     public void Hash() throws Exception{
-        String data = "123456";
+        String data = "12345";
         System.out.println("original data is: " + data);
         String hash = Hash.encrypt(data);
         System.out.println("after Hashed: " + hash);

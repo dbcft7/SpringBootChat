@@ -13,16 +13,21 @@ import javax.annotation.Resource;
 @SpringBootTest(classes = Application.class)
 public class UserServiceTest {
 
-    private String userName = "angle";
-    private String password = "dbcft";
+    private String username = "tuantuan";
+    private String password = "111111";
 
     @Resource
     private UserService userService;
 
     @Test
     public void userExist() throws Exception {
-        String result = userService.userExist(userName, password);
+        String result = userService.userExist(username, password);
         System.out.println(result);
+    }
+
+    @Test
+    public void userRegister() {
+        userService.userRegister(username, password);
     }
 
 }

@@ -9,4 +9,5 @@ public interface UserMapper {
     User findUser(@Param("username") String username);
     List<User> findMoreUser(List<String> moreUsername);
     User findUserFromAccount(@Param("username") String username);
+    void insertUser2Account(User user);
 }
