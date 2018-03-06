@@ -24,8 +24,7 @@ public class UserCtrl {
 
     @PostMapping("/register")
     public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password) {
-        user.userRegister(username, password);
-        return "register successfully!";
+        return user.userRegister(username, password);
     }
 
 }

@@ -52,7 +52,7 @@ public class UserService {
         return user;
     }
 
-    public void userRegister(String username, String password) {
+    public String userRegister(String username, String password) {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -60,9 +60,9 @@ public class UserService {
 
         if (userFromDB == null) {
             userMapper.insertUser2Account(user);
-            System.out.println("Register successfully!");
+            return "Register successfully!";
         } else {
-            System.out.println("the username is already existed, please change to another one!");
+            return "the username is already existed, please change to another one!";
         }
     }
 

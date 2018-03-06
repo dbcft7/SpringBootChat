@@ -27,7 +27,8 @@ public class UserServiceTest {
 
     @Test
     public void userRegister() {
-        userService.userRegister(username, password);
+        String result = userService.userRegister(username, password);
+        System.out.println(result);
     }
 
 }
