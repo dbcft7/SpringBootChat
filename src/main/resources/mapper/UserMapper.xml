@@ -19,10 +19,21 @@
         SELECT * FROM account where username=#{username}
     </select>
 
-    <insert id="insertUser2Account" useGeneratedKeys="false" keyProperty="username" parameterType="User">
+    <insert id="insertUserIntoAccount" parameterType="User">
         INSERT INTO account(username, password)
         VALUES(#{username}, #{password})
     </insert>
+
+    <insert id="insertUserIntoFriend" parameterType="int">
+        INSERT INTO friend(user_id, friend_id)
+        VALUES(#{userId}, #{friendId})
+    </insert>
+
+    <select id="findUserFromFriend" parameterType="int" resultType="User">
+        SELECT account.id, username, password, nickname FROM account, friend
+        where friend.friend_id = account.id
+        And user_id = #{userId}
+    </select>
 
 </mapper>
 
