@@ -81,6 +81,7 @@ public class UserService {
         int userId = userFromAccount.getId();
         int friendId = friendFromAccount.getId();
         userMapper.insertUserIntoFriend(userId, friendId);
+        userMapper.insertUserIntoFriend(friendId, userId);
         return "add friend successfully!";
     }
 
