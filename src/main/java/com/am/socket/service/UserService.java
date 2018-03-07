@@ -2,10 +2,6 @@ package com.am.socket.service;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,11 +28,11 @@ public class UserService {
     }
 
     public boolean findUserIsTrue(String username, String password) throws Exception {
-        User userFromDB = userMapper.findUserFromAccount(username);
+        User userFromAccount = userMapper.findUserFromAccount(username);
 
-        if (userFromDB == null) {
+        if (userFromAccount == null) {
             return false;
-        } else if (username.equals(userFromDB.getUsername()) && password.equals(userFromDB.getPassword())) {
+        } else if (username.equals(userFromAccount.getUsername()) && password.equals(userFromAccount.getPassword())) {
             return true;
         } else {
             return false;
@@ -56,14 +52,43 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        User userFromDB = userMapper.findUserFromAccount(username);
+        User userFromAccount = userMapper.findUserFromAccount(username);
 
-        if (userFromDB == null) {
-            userMapper.insertUser2Account(user);
+        if (userFromAccount == null) {
+            userMapper.insertUserIntoAccount(user);
             return "Register successfully!";
         } else {
             return "the username is already existed, please change to another one!";
         }
+    }
+
+    public String userAddFriend(String username, String friendName) {
+        User userFromAccount = userMapper.findUserFromAccount(username);
+        User friendFromAccount = userMapper.findUserFromAccount(friendName);
+
+        if (friendFromAccount == null) {
+            return "the user you want to add to a friend is not exist!";
+        }
+
+        List<User> friendList = userFindFriend(username);
+
+        for (User friend : friendList) {
+            if (friend.getUsername().equals(friendName)) {
+                return "you added this friend before, please do not add it again!";
+            }
+        }
+
+        int userId = userFromAccount.getId();
+        int friendId = friendFromAccount.getId();
+        userMapper.insertUserIntoFriend(userId, friendId);
+        return "add friend successfully!";
+    }
+
+    public List<User> userFindFriend(String username) {
+        User userFromAccount = userMapper.findUserFromAccount(username);
+        int userId = userFromAccount.getId();
+        List<User> friendList = userMapper.findUserFromFriend(userId);
+        return friendList;
     }
 
 }
