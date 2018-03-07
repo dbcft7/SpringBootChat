@@ -18,7 +18,7 @@ public class UserCtrl {
         return user.userExist(username,password);
     }
     //   parameter from front-end: ["mazy","angle"]
-    @PostMapping("/checkuser")
+    @PostMapping("/checkUser")
     public List<String> moreUserFind(@RequestBody List<String> users) {
         return user.moreUserExist(users);
     }
@@ -28,12 +28,12 @@ public class UserCtrl {
         return user.userRegister(username, password);
     }
 
-    @PostMapping("/addfriend")
+    @PostMapping("/addFriend")
     public String userAddFriend(@RequestParam("username") String username, @RequestParam("friendName") String friendName) {
         return user.userAddFriend(username, friendName);
     }
 
-    @PostMapping("/findfriend")
+    @PostMapping("/findFriend")
     public List<User> userFindFriend(@RequestParam("username") String username) {
         return user.userFindFriend(username);
     }
