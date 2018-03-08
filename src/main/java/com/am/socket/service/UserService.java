@@ -15,37 +15,81 @@ public class UserService {
     private UserMapper userMapper;
 
     public String userExist(String username, String password) throws Exception {
-        User userFromDB = userMapper.findUserFromAccount(username);
+        User userFromDB = userMapper.findUser(username);
         String passwordHashed = Hash.encrypt(password);
 
-        if(userFromDB == null) return "the account is not exist!";
-        else if(username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())){
+        if (userFromDB == null) {
+            return "the account is not exist!";
+        } else if(username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())){
             return "login successfully!";
-        }else{
+        } else {
             return "password is wrong!";
         }
     }
 
-    public boolean findUserIsTrue(String username, String password) throws Exception{
-        User userinsql = userMapper.findUserFromAccount(username);
+    public boolean findUserIsTrue(String username, String password) throws Exception {
+        User userFromAccount = userMapper.findUserFromAccount(username);
 
-        if(userinsql == null){
+        if (userFromAccount == null) {
             return false;
-        }
-        else if(username.equals(userinsql.getUsername()) && password.equals(userinsql.getPassword())){
+        } else if (username.equals(userFromAccount.getUsername()) && password.equals(userFromAccount.getPassword())) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    public List<String> moreUserExist(List<String> username){
+    public List<String> moreUserExist(List<String> username) {
         List<User> userList = userMapper.findMoreUser(username);
         List<String> user = new ArrayList<>();
-        for(int i=0; i<userList.size(); i++){
+        for (int i=0; i<userList.size(); i++) {
             user.add(userList.get(i).getUsername());
         }
         return user;
+    }
+
+    public String userRegister(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        User userFromAccount = userMapper.findUserFromAccount(username);
+
+        if (userFromAccount == null) {
+            userMapper.insertUserIntoAccount(user);
+            return "Register successfully!";
+        } else {
+            return "the username is already existed, please change to another one!";
+        }
+    }
+
+    public String userAddFriend(String username, String friendName) {
+        User userFromAccount = userMapper.findUserFromAccount(username);
+        User friendFromAccount = userMapper.findUserFromAccount(friendName);
+
+        if (friendFromAccount == null) {
+            return "the user you want to add to a friend is not exist!";
+        }
+
+        List<User> friendList = userFindFriend(username);
+
+        for (User friend : friendList) {
+            if (friend.getUsername().equals(friendName)) {
+                return "you added this friend before, please do not add it again!";
+            }
+        }
+
+        int userId = userFromAccount.getId();
+        int friendId = friendFromAccount.getId();
+        userMapper.insertUserIntoFriend(userId, friendId);
+        userMapper.insertUserIntoFriend(friendId, userId);
+        return "add friend successfully!";
+    }
+
+    public List<User> userFindFriend(String username) {
+        User userFromAccount = userMapper.findUserFromAccount(username);
+        int userId = userFromAccount.getId();
+        List<User> friendList = userMapper.findUserFromFriend(userId);
+        return friendList;
     }
 
 }

@@ -78,8 +78,12 @@ public class WebSocketService extends TextWebSocketHandler {
                     }
                 }
             }
+
             session.sendMessage(new TextMessage("welcome to Chat!"));
-            handleLoginUsers(session);
+
+            for (WebSocketSession sessionSend : map.values()) {
+                handleLoginUsers(sessionSend);
+            }
         }
     }
 

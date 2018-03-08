@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.am.socket.dao.UserMapper">
     <select id="findUser" parameterType="String" resultType="User">
-        SELECT * from user where user.user_name=#{username}
+        SELECT * from user where username=#{username}
     </select>
 
     <select id="findMoreUser" resultType="User">
@@ -16,7 +16,23 @@
     </select>
     
     <select id="findUserFromAccount" parameterType="String" resultType="User">
-        SELECT * FROM account where user_name=#{username}
+        SELECT * FROM account where username=#{username}
+    </select>
+
+    <insert id="insertUserIntoAccount" parameterType="User">
+        INSERT INTO account(username, password)
+        VALUES(#{username}, #{password})
+    </insert>
+
+    <insert id="insertUserIntoFriend" parameterType="int">
+        INSERT INTO friend(user_id, friend_id)
+        VALUES(#{userId}, #{friendId})
+    </insert>
+
+    <select id="findUserFromFriend" parameterType="int" resultType="User">
+        SELECT account.id, username, password, nickname FROM account, friend
+        where friend.friend_id = account.id
+        And user_id = #{userId}
     </select>
 
 </mapper>
