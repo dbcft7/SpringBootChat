@@ -2,6 +2,7 @@ package com.am.socket.service;
 
 import com.alibaba.fastjson.JSON;
 import com.am.socket.model.User;
+import com.am.socket.util.RSA;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -9,8 +10,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.am.socket.util.RSA.decrypt;
+import static com.am.socket.util.RSA.getPrivateKey;
 
 public class WebSocketService extends TextWebSocketHandler {
 
@@ -59,9 +64,8 @@ public class WebSocketService extends TextWebSocketHandler {
     private void handleLogin(WebSocketSession session, String[] message) throws Exception {
         User userLogin = JSON.parseObject(message[2],User.class);
         String username = userLogin.getUsername();
-        String password = userLogin.getPassword();
-
-        if (!user.findUserIsTrue(username,password)) {
+        String password = new String(decrypt(userLogin.getPassword(), RSA.getPrivateKey(RSA.privateKeyString)));
+        if (!user.findUserIsTrue(username, password)) {
             System.out.println("************************** login failed!");
             map.remove(username);
             session.sendMessage(new TextMessage("the username or password is wrong, login failed!"));
