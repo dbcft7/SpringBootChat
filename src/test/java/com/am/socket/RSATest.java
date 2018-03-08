@@ -1,6 +1,7 @@
 package com.am.socket;
 
 import com.am.socket.util.Hash;
+import com.am.socket.util.RSA;
 import org.junit.Test;
 
 import java.security.KeyPair;
@@ -17,21 +18,25 @@ import static com.am.socket.util.RSA.generateKeyPair;
 public class RSATest {
     private String string = "Hello world!";
 
+    @Test
+    public void RSR() throws Exception {
+        PublicKey publicKey = RSA.getPublicKey(RSA.publicKeyString);
+        PrivateKey privateKey = RSA.getPrivateKey(RSA.privateKeyString);
+        System.out.println("public key is:  "+ new String(Base64.getEncoder().encode(publicKey.getEncoded())));
+        System.out.println("private key is:  "+new String(Base64.getEncoder().encode(privateKey.getEncoded())));
+        byte[] encrypted = encrypt(string, publicKey);
+        System.out.println("after encrypted:  " + new String(encrypted));
+        String  decrypted = new String(decrypt(encrypted, privateKey));
+        System.out.println("after decrypted:  " + decrypted);
+    }
 
     @Test
-    public void RSR()throws Exception{
-        KeyPair keyPair = generateKeyPair();
+    public void generateKeyPair() throws Exception {
+        KeyPair keyPair = RSA.generateKeyPair();
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
         System.out.println("public key is:  "+ new String(Base64.getEncoder().encode(publicKey.getEncoded())));
         System.out.println("private key is:  "+new String(Base64.getEncoder().encode(privateKey.getEncoded())));
-        byte[]  encrypted = encrypt(string,publicKey);
-        //String en = byte2Hex(encrypted);
-        System.out.println("after encrypted:  " + new String(encrypted));
-        //System.out.println("********after encrypted:  " + en);
-
-        String  decrypted = new String(decrypt(encrypted,privateKey));
-        System.out.println("after decrypted:  " + decrypted);
     }
 
     @Test
