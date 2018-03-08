@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 public class RSA {
 
@@ -27,7 +28,7 @@ public class RSA {
 
     // encrypting by using public key
     public static byte[] encrypt(String string, PublicKey publicKey) throws Exception{
-        byte[] content = string.getBytes();
+        byte[] content = string.getBytes("UTF-8");
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE,publicKey);
         return cipher.doFinal(content);
@@ -56,6 +57,11 @@ public class RSA {
         out.close();
         return decrypted;
     }
+
+    public static byte[] decrypt(String data, PrivateKey key) throws Exception {
+        return decrypt(Base64.getDecoder().decode(data), key);
+    }
+
 
     public static PublicKey getPublicKey(String publicKeyString) {
         PublicKey publicKey = null;

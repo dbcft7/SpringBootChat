@@ -3,6 +3,7 @@ package com.am.socket;
 import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
 import org.junit.Test;
+import sun.misc.BASE64Encoder;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -16,7 +17,7 @@ import static com.am.socket.util.RSA.generateKeyPair;
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = Application.class)
 public class RSATest {
-    private String string = "Hello world!";
+    private String string = "iloveyou";
 
     @Test
     public void RSR() throws Exception {
@@ -24,9 +25,10 @@ public class RSATest {
         PrivateKey privateKey = RSA.getPrivateKey(RSA.privateKeyString);
         System.out.println("public key is:  "+ new String(Base64.getEncoder().encode(publicKey.getEncoded())));
         System.out.println("private key is:  "+new String(Base64.getEncoder().encode(privateKey.getEncoded())));
-        byte[] encrypted = encrypt(string, publicKey);
-        System.out.println("after encrypted:  " + new String(encrypted));
-        String  decrypted = new String(decrypt(encrypted, privateKey));
+        byte[] encrypted = RSA.encrypt(string, publicKey);
+        String encryptedString = Base64.getEncoder().encodeToString(encrypted);
+        System.out.println("after encrypted:  " + encryptedString);
+        String decrypted = new String(RSA.decrypt(encryptedString, privateKey));
         System.out.println("after decrypted:  " + decrypted);
     }
 
