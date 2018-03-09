@@ -17,7 +17,7 @@ import static com.am.socket.util.RSA.generateKeyPair;
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = Application.class)
 public class RSATest {
-    private String string = "iloveyou";
+    private String string = "111111";
 
     @Test
     public void RSR() throws Exception {
@@ -46,7 +46,7 @@ public class RSATest {
         String data = "12345";
         String salt = Hash.generateSalt();
         System.out.println("original data is: " + data);
-        String hash = Hash.encrypt(data,salt);
+        String hash = Hash.encrypt(data=salt);
         System.out.println("after Hashed: " + hash);
     }
 

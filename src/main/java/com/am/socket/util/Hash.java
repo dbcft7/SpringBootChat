@@ -11,8 +11,8 @@ public class Hash {
             'c', 'd', 'e', 'f'
     };
 
-    public static String encrypt(String data, String salt) throws Exception {
-        byte[] password = (data + salt).getBytes();
+    public static String encrypt(String data) throws Exception {
+        byte[] password = (data).getBytes();
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
         byte[] cipher = messageDigest.digest(password);
         return byte2Hex(cipher);

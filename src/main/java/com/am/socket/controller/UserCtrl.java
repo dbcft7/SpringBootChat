@@ -14,8 +14,8 @@ public class UserCtrl {
     private UserService user;
 
     @PostMapping("/login")
-    public String userFind(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
-        return user.userExist(username,password);
+    public boolean userFind(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
+        return user.findUserIsTrue(username,password);
     }
     //   parameter from front-end: ["mazy","angle"]
     @PostMapping("/checkUser")

@@ -18,26 +18,11 @@ public class UserService {
     @Resource
     private UserMapper userMapper;
 
-    public String userExist(String username, String password) throws Exception {
-        User userFromDB = userMapper.findUserFromAccount(username);
-        UserSalt userSalt = userMapper.findSaltFromSalt(username);
-        String salt = userSalt.getSalt();
-        String passwordHashed = Hash.encrypt(password, salt);
-
-        if (userFromDB == null) {
-            return "the account is not exist!";
-        } else if(username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())){
-            return "login successfully!";
-        } else {
-            return "password is wrong!";
-        }
-    }
-
     public boolean findUserIsTrue(String username, String password) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String salt = userSalt.getSalt();
-        String passwordHashed = Hash.encrypt(password, salt);
+        String passwordHashed = Hash.encrypt(password + salt);
 
         if (userFromAccount == null) {
             return false;
@@ -49,7 +34,7 @@ public class UserService {
     }
 
     public List<String> moreUserExist(List<String> username) {
-        List<User> userList = userMapper.findMoreUser(username);
+        List<User> userList = userMapper.findMoreUserFromAccount(username);
         List<String> user = new ArrayList<>();
         for (int i=0; i<userList.size(); i++) {
             user.add(userList.get(i).getUsername());
@@ -60,10 +45,10 @@ public class UserService {
     public String userRegister(String username, String passwordRSA) throws Exception {
         User user = new User();
         user.setUsername(username);
-        String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
+        String password = new String(RSA.decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         System.out.println("**********************"+password);
         String salt = Hash.generateSalt();
-        String passwordSalted = Hash.encrypt(password, salt);
+        String passwordSalted = Hash.encrypt(password + salt);
         user.setPassword(passwordSalted);
         User userFromAccount = userMapper.findUserFromAccount(username);
 

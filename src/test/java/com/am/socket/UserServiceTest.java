@@ -28,14 +28,14 @@ public class UserServiceTest {
 
     @Test
     public void userExist() throws Exception {
-        String result = userService.userExist(username, password);
+        boolean result = userService.findUserIsTrue(username, password);
         System.out.println(result);
     }
 
     @Test
     public void userRegister() throws Exception {
-        String password = "24rUJkG0GYGdOWRe5587NRGoSIC/JYfLwtQxOv6jSmHn9osDeCgeUQUOa0k7RUCTO1pV389w5qioJaAY2UPmK3R5pCM9X9KCbEdMU9BX3/39yoWNi/nZyBXtPsXNTpIihnrJHeCoM12Na2R/iGfhYiAD0+ckTSQDx6iCcguzTKw=";
-        String result = userService.userRegister("mazyi", password);
+        String password = "pd98AP9Zoju0K+zhuW9zVVYg3MHzWfCuXz3eg4CJZwYggrc10u+g9tGSFAgZ6zXLdLWmRd0ewu3fcthb5SrYNRtBMvwlnFD7c1ygfK/8TdsG8pX5BfEbeSJsCNolj4pLcVr4T0s+20PLicyZJzudOvRecjxddIPmNaZ/ZgU6chg=";
+        String result = userService.userRegister("anqi", password);
         System.out.println(result);
     }
 

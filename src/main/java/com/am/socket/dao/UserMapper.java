@@ -8,11 +8,9 @@ import java.util.List;
 
 
 public interface UserMapper {
-    User findUser(@Param("username") String username);
-    List<User> findMoreUser(List<String> moreUsername);
-
-    User findUserFromAccount(@Param("username") String username);
     void insertUserIntoAccount(User user);
+    User findUserFromAccount(@Param("username") String username);
+    List<User> findMoreUserFromAccount(List<String> moreUsername);
 
     void insertUserIntoFriend(@Param("userId") int userId, @Param("friendId") int friendId);
     List<User> findUserFromFriend(@Param("userId") int userId);
