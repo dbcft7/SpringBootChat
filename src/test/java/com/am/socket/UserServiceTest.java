@@ -40,7 +40,7 @@ public class UserServiceTest {
     }
 
     String userOne = "angle";
-    String userTwo = "tuan";
+    String userTwo = "mazyi";
 
     @Test
     public void userAddFriend() {
