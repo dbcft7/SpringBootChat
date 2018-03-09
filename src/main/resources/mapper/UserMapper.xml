@@ -30,9 +30,19 @@
     </insert>
 
     <select id="findUserFromFriend" parameterType="int" resultType="User">
-        SELECT account.id, username, password, nickname FROM account, friend
-        where friend.friend_id = account.id
-        And user_id = #{userId}
+        SELECT account_user_id, username, password, nickname FROM account, friend
+        where friend.friend_id = account.user_id
+        And friend_user_id = #{userId}
+    </select>
+
+    <insert id="insertSaltIntoSalt" parameterType="String">
+        INSERT INTO salt(username, salt)
+        VALUES (#{username}, #{salt})
+    </insert>
+
+    <select id="findSaltFromSalt" parameterType="String" resultType="UserSalt">
+        SELECT username, salt FROM salt
+        WHERE username = #{username}
     </select>
 
 </mapper>

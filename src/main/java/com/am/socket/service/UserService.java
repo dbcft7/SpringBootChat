@@ -1,12 +1,16 @@
 package com.am.socket.service;
+import com.am.socket.model.UserSalt;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
+import com.am.socket.util.RSA;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.am.socket.util.RSA.decrypt;
 
 
 @Service
@@ -15,8 +19,10 @@ public class UserService {
     private UserMapper userMapper;
 
     public String userExist(String username, String password) throws Exception {
-        User userFromDB = userMapper.findUser(username);
-        String passwordHashed = Hash.encrypt(password);
+        User userFromDB = userMapper.findUserFromAccount(username);
+        UserSalt userSalt = userMapper.findSaltFromSalt(username);
+        String salt = userSalt.getSalt();
+        String passwordHashed = Hash.encrypt(password, salt);
 
         if (userFromDB == null) {
             return "the account is not exist!";
@@ -29,10 +35,13 @@ public class UserService {
 
     public boolean findUserIsTrue(String username, String password) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
+        UserSalt userSalt = userMapper.findSaltFromSalt(username);
+        String salt = userSalt.getSalt();
+        String passwordHashed = Hash.encrypt(password, salt);
 
         if (userFromAccount == null) {
             return false;
-        } else if (username.equals(userFromAccount.getUsername()) && password.equals(userFromAccount.getPassword())) {
+        } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
             return true;
         } else {
             return false;
@@ -48,14 +57,19 @@ public class UserService {
         return user;
     }
 
-    public String userRegister(String username, String password) {
+    public String userRegister(String username, String passwordRSA) throws Exception {
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password);
+        String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
+        System.out.println("**********************"+password);
+        String salt = Hash.generateSalt();
+        String passwordSalted = Hash.encrypt(password, salt);
+        user.setPassword(passwordSalted);
         User userFromAccount = userMapper.findUserFromAccount(username);
 
         if (userFromAccount == null) {
             userMapper.insertUserIntoAccount(user);
+            userMapper.insertSaltIntoSalt(username, salt);
             return "Register successfully!";
         } else {
             return "the username is already existed, please change to another one!";

@@ -42,10 +42,12 @@ public class RSATest {
     }
 
     @Test
-    public void Hash() throws Exception{
+    public void hash() throws Exception{
         String data = "12345";
+        String salt = Hash.generateSalt();
         System.out.println("original data is: " + data);
-        String hash = Hash.encrypt(data);
+        String hash = Hash.encrypt(data,salt);
         System.out.println("after Hashed: " + hash);
     }
+
 }
