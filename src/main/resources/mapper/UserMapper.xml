@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.am.socket.dao.UserMapper">
-    <select id="findUser" parameterType="String" resultType="User">
-        SELECT * from user where username=#{username}
+
+    <insert id="insertUserIntoAccount" parameterType="User">
+        INSERT INTO account(username, password)
+        VALUES(#{username}, #{password})
+    </insert>
+
+    <select id="findUserFromAccount" parameterType="String" resultType="User">
+        SELECT * FROM account where username=#{username}
     </select>
 
-    <select id="findMoreUser" resultType="User">
+    <select id="findMoreUserFromAccount" resultType="User">
         SELECT *
-        from user u
+        from account u
         where user_name in
         <foreach item="more_username" index="index" collection="list"
                  open="(" separator="," close=")">
             #{more_username}
         </foreach>
     </select>
-    
-    <select id="findUserFromAccount" parameterType="String" resultType="User">
-        SELECT * FROM account where username=#{username}
-    </select>
-
-    <insert id="insertUserIntoAccount" parameterType="User">
-        INSERT INTO account(username, password)
-        VALUES(#{username}, #{password})
-    </insert>
 
     <insert id="insertUserIntoFriend" parameterType="int">
         INSERT INTO friend(user_id, friend_id)
@@ -30,9 +27,19 @@
     </insert>
 
     <select id="findUserFromFriend" parameterType="int" resultType="User">
-        SELECT account.id, username, password, nickname FROM account, friend
-        where friend.friend_id = account.id
-        And user_id = #{userId}
+        SELECT account.user_id, username, password, nickname FROM account, friend
+        where friend.friend_id = account.user_id
+        And friend.user_id = #{userId}
+    </select>
+
+    <insert id="insertSaltIntoSalt" parameterType="String">
+        INSERT INTO salt(username, salt)
+        VALUES (#{username}, #{salt})
+    </insert>
+
+    <select id="findSaltFromSalt" parameterType="String" resultType="UserSalt">
+        SELECT username, salt FROM salt
+        WHERE username = #{username}
     </select>
 
 </mapper>

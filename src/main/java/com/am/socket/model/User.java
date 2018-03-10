@@ -3,15 +3,15 @@ package com.am.socket.model;
 public class User {
     private String username;
     private String password;
-    private int id;
+    private int userId;
     private String nickname;
 
     public int getId() {
-        return id;
+        return userId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getNickname() {

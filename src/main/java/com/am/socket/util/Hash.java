@@ -1,6 +1,7 @@
 package com.am.socket.util;
 
 import java.security.MessageDigest;
+import java.util.Random;
 
 public class Hash {
     private static final char[] HEXES = {
@@ -11,18 +12,30 @@ public class Hash {
     };
 
     public static String encrypt(String data) throws Exception {
-        byte[] content = data.getBytes();
+        byte[] password = (data).getBytes();
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-        byte[] cipher = messageDigest.digest(content);
+        byte[] cipher = messageDigest.digest(password);
         return byte2Hex(cipher);
     }
 
-    public static String byte2Hex(byte[] bytes){
+    private static String byte2Hex(byte[] bytes){
         if(bytes == null || bytes.length ==0) return null;
         StringBuilder sb = new StringBuilder();
         for(byte b : bytes){
             sb.append(HEXES[(b >> 4) & 0x0F]);
             sb.append(HEXES[b & 0x0F]);
+        }
+        return sb.toString();
+    }
+
+    public static String generateSalt() {
+        Random r = new Random();
+        StringBuilder sb = new StringBuilder(16);
+        sb.append(r.nextInt(99999999)).append(r.nextInt(99999999));
+        if (sb.length() < 16) {
+            for (int i = 0; i < 16 - sb.length(); i++) {
+                sb.append(0);
+            }
         }
         return sb.toString();
     }
