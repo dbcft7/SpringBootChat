@@ -24,8 +24,8 @@ public class UserCtrl {
     }
 
     @PostMapping("/register")
-    public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
-        return user.userRegister(username, password);
+    public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("email") String email) throws Exception {
+        return user.userRegister(username, password, email);
     }
 
     @PostMapping("/addFriend")
@@ -36,6 +36,11 @@ public class UserCtrl {
     @PostMapping("/findFriend")
     public List<User> userFindFriend(@RequestParam("username") String username) {
         return user.userFindFriend(username);
+    }
+
+    @PostMapping("/activate")
+    public String userActivate(@RequestParam("email") String email, @RequestParam("activeCode") String activeCode) {
+        return user.processActivate(email, activeCode);
     }
 
 }

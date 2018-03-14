@@ -10,6 +10,7 @@ import java.util.List;
 public interface UserMapper {
     void insertUserIntoAccount(User user);
     User findUserFromAccount(@Param("username") String username);
+    User findEmailFromAccount(@Param("email") String email);
     List<User> findMoreUserFromAccount(List<String> moreUsername);
 
     void insertUserIntoFriend(@Param("userId") int userId, @Param("friendId") int friendId);
@@ -17,5 +18,7 @@ public interface UserMapper {
 
     void insertSaltIntoSalt(@Param("username") String username, @Param("salt") String salt);
     UserSalt findSaltFromSalt(@Param("username") String username);
+
+    void activeAccount(@Param("userId") int userId);
 
 }

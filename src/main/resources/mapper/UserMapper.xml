@@ -3,12 +3,16 @@
 <mapper namespace="com.am.socket.dao.UserMapper">
 
     <insert id="insertUserIntoAccount" parameterType="User">
-        INSERT INTO account(username, password)
-        VALUES(#{username}, #{password})
+        INSERT INTO account(username, password, email, active_code)
+        VALUES(#{username}, #{password}, #{email}, #{activeCode})
     </insert>
 
     <select id="findUserFromAccount" parameterType="String" resultType="User">
         SELECT * FROM account where username=#{username}
+    </select>
+
+    <select id="findEmailFromAccount" parameterType="String" resultType="User">
+        SELECT * FROM account where email=#{email}
     </select>
 
     <select id="findMoreUserFromAccount" resultType="User">
@@ -41,6 +45,11 @@
         SELECT username, salt FROM salt
         WHERE username = #{username}
     </select>
+
+    <update id="activeAccount" parameterType="int">
+        UPDATE account set active = 'true'
+        WHERE user_id = #{userId}
+    </update>
 
 </mapper>
 
