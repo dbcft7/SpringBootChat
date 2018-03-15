@@ -47,7 +47,7 @@
     </select>
 
     <update id="activeAccount" parameterType="int">
-        UPDATE account set active = 'true'
+        UPDATE account set activated_state = 1
         WHERE user_id = #{userId}
     </update>
 

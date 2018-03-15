@@ -9,9 +9,10 @@ import java.util.Properties;
 public class SendEmail {
     public static final String HOST = "smtp.gmail.com";
     public static final String PROTOCOL = "smtp";
-    public static final String SENDER = "eceyuan@gmail.com";
-    public static final String PASSWORD = "utece1779";
+    public static final String SENDER = "SpringChat666@gmail.com";
+    public static final String PASSWORD = "springchat";
     public static final String PORT = "587";
+    public static final String SUBJECT = "SpringChat账号激活邮件";
 
     private static Session getSession() {
         Properties props = new Properties();
@@ -42,7 +43,7 @@ public class SendEmail {
             msg.setFrom(new InternetAddress(SENDER));
             InternetAddress[] address = {new InternetAddress(toEmail)};
             msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject("账号激活邮件");
+            msg.setSubject(SUBJECT);
             msg.setSentDate(new Date());
             msg.setContent(content , "text/html;charset=utf-8");
 

@@ -19,6 +19,8 @@ public class UserService {
     @Resource
     private UserMapper userMapper;
 
+    public final static String URL = "http://127.0.0.1:8080/user/activate";
+
     public boolean findUserIsTrue(String username, String password) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
@@ -61,7 +63,7 @@ public class UserService {
         User userFromAccount = userMapper.findUserFromAccount(username);
 
         if (userFromAccount == null) {
-            processRegister(email,activeCode);
+            sendEmailtoUser(email,activeCode);
             userMapper.insertUserIntoAccount(user);
             userMapper.insertSaltIntoSalt(username, salt);
             return "Register successfully!";
@@ -100,27 +102,25 @@ public class UserService {
         return friendList;
     }
 
-    public void processRegister(String email, String activeCode) throws Exception {
+    private void sendEmailtoUser(String email, String activeCode) throws Exception {
         StringBuffer content = new StringBuffer();
         content.append("点击下面链接激活账号，否则重新注册账号，链接只能使用一次，请尽快激活！</br>");
-        content.append("<a href=\"http://127.0.0.1:8080/user/activate?email=");
+        content.append("<a href=\"");
+        content.append(URL);
+        content.append("?email=");
         content.append(email);
         content.append("&activeCode=");
         content.append(activeCode);
-        content.append("\">http://localhost:8080/user/activate?email=");
-        content.append(email);
-        content.append("&activeCode=");
-        content.append(activeCode);
-        content.append("</a>");
+        content.append("\">请点击此链接激活账号</a>");
 
         SendEmail.send(email, content.toString());
-        System.out.println("发送邮件");
+        System.out.println("email sent successfully!");
     }
 
     public String processActivate(String email, String activeCode) {
         User user = userMapper.findEmailFromAccount(email);
         if (user != null) {
-            if (user.getActive() == null) {
+            if (user.getActive() != 1) {
                 if (user.getActiveCode().equals(activeCode)) {
                     userMapper.activeAccount(user.getId());
                     return "Activate successfully!";

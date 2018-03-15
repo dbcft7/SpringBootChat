@@ -6,7 +6,7 @@ public class User {
     private int userId;
     private String nickname;
     private String email;
-    private String active;
+    private int activatedState;
     private String activeCode;
 
     public String getActiveCode() {
@@ -25,12 +25,12 @@ public class User {
         this.email = email;
     }
 
-    public String getActive() {
-        return active;
+    public int getActive() {
+        return activatedState;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public void setActive(int active) {
+        this.activatedState = active;
     }
 
     public int getId() {

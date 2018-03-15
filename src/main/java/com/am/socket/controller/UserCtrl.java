@@ -38,7 +38,7 @@ public class UserCtrl {
         return user.userFindFriend(username);
     }
 
-    @PostMapping("/activate")
+    @GetMapping("/activate")
     public String userActivate(@RequestParam("email") String email, @RequestParam("activeCode") String activeCode) {
         return user.processActivate(email, activeCode);
     }
