@@ -19,6 +19,7 @@ public class UserServiceTest {
 
     private String username = "angle";
     private String password = "dbcft";
+    private String email = "496514152@qq.com";
 
     @Resource
     private UserService userService;
@@ -28,15 +29,22 @@ public class UserServiceTest {
 
     @Test
     public void userExist() throws Exception {
-        boolean result = userService.findUserIsTrue(username, password);
+        boolean result = userService.userLoginForWebSocket(username, password);
         System.out.println(result);
     }
 
     @Test
     public void userRegister() throws Exception {
         String password = "pd98AP9Zoju0K+zhuW9zVVYg3MHzWfCuXz3eg4CJZwYggrc10u+g9tGSFAgZ6zXLdLWmRd0ewu3fcthb5SrYNRtBMvwlnFD7c1ygfK/8TdsG8pX5BfEbeSJsCNolj4pLcVr4T0s+20PLicyZJzudOvRecjxddIPmNaZ/ZgU6chg=";
-        String result = userService.userRegister("anqi", password);
+        String result = userService.userRegister("anqi", password, email);
         System.out.println(result);
+    }
+
+    @Test
+    public void userActivate() {
+        String activateCode = "65236329b991541dd1f00e68edf2c446fef76738";
+        String active = userService.processActivate(email, activateCode);
+        System.out.println(active);
     }
 
     String userOne = "angle";

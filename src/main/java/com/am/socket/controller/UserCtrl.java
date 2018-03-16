@@ -4,6 +4,9 @@ import com.am.socket.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -13,9 +16,9 @@ public class UserCtrl {
     @Resource
     private UserService user;
 
-    @PostMapping("/login")
-    public boolean userFind(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
-        return user.findUserIsTrue(username,password);
+    @GetMapping("/login")
+    public boolean userFind(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid) throws Exception {
+        return user.findUserIsTrue(username, password, captcha, uuid);
     }
     //   parameter from front-end: ["mazy","angle"]
     @PostMapping("/checkUser")
@@ -24,8 +27,8 @@ public class UserCtrl {
     }
 
     @PostMapping("/register")
-    public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
-        return user.userRegister(username, password);
+    public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("email") String email) throws Exception {
+        return user.userRegister(username, password, email);
     }
 
     @PostMapping("/addFriend")
@@ -36,6 +39,17 @@ public class UserCtrl {
     @PostMapping("/findFriend")
     public List<User> userFindFriend(@RequestParam("username") String username) {
         return user.userFindFriend(username);
+    }
+
+    @GetMapping("/activate")
+    public String userActivate(@RequestParam("email") String email, @RequestParam("activeCode") String activeCode) {
+        return user.processActivate(email, activeCode);
+    }
+
+    @GetMapping("/captcha")
+    public String generateCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String uuid = user.generateCaptcha(request, response);
+        return uuid;
     }
 
 }

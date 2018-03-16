@@ -3,18 +3,22 @@
 <mapper namespace="com.am.socket.dao.UserMapper">
 
     <insert id="insertUserIntoAccount" parameterType="User">
-        INSERT INTO account(username, password)
-        VALUES(#{username}, #{password})
+        INSERT INTO account(username, password, email, active_code)
+        VALUES(#{username}, #{password}, #{email}, #{activeCode})
     </insert>
 
     <select id="findUserFromAccount" parameterType="String" resultType="User">
-        SELECT * FROM account where username=#{username}
+        SELECT * FROM account WHERE username=#{username}
+    </select>
+
+    <select id="findEmailFromAccount" parameterType="String" resultType="User">
+        SELECT * FROM account WHERE email=#{email}
     </select>
 
     <select id="findMoreUserFromAccount" resultType="User">
         SELECT *
-        from account u
-        where user_name in
+        FROM account u
+        WHERE user_name in
         <foreach item="more_username" index="index" collection="list"
                  open="(" separator="," close=")">
             #{more_username}
@@ -28,8 +32,8 @@
 
     <select id="findUserFromFriend" parameterType="int" resultType="User">
         SELECT account.user_id, username, password, nickname FROM account, friend
-        where friend.friend_id = account.user_id
-        And friend.user_id = #{userId}
+        WHERE friend.friend_id = account.user_id
+        AND friend.user_id = #{userId}
     </select>
 
     <insert id="insertSaltIntoSalt" parameterType="String">
@@ -40,6 +44,21 @@
     <select id="findSaltFromSalt" parameterType="String" resultType="UserSalt">
         SELECT username, salt FROM salt
         WHERE username = #{username}
+    </select>
+
+    <update id="activeAccount" parameterType="int">
+        UPDATE account set activated_state = 1
+        WHERE user_id = #{userId}
+    </update>
+
+    <insert id="insertCaptchaIntoCaptcha" parameterType="String">
+        INSERT INTO captcha(uuid, captcha)
+        VALUES (#{uuid}, #{captcha})
+    </insert>
+
+    <select id="findCaptchaFromCaptcha" parameterType="String" resultType="Captcha">
+        SELECT * FROM captcha
+        WHERE uuid = #{uuid}
     </select>
 
 </mapper>

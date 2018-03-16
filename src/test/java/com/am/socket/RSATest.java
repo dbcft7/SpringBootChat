@@ -2,6 +2,7 @@ package com.am.socket;
 
 import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
+import com.am.socket.util.SendEmail;
 import org.junit.Test;
 import sun.misc.BASE64Encoder;
 
@@ -48,6 +49,11 @@ public class RSATest {
         System.out.println("original data is: " + data);
         String hash = Hash.encrypt(data=salt);
         System.out.println("after Hashed: " + hash);
+    }
+
+    @Test
+    public void sendEmail() {
+        SendEmail.send("496514152@qq.com", "hello!");
     }
 
 }

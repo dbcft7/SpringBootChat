@@ -65,7 +65,7 @@ public class WebSocketService extends TextWebSocketHandler {
         User userLogin = JSON.parseObject(message[2],User.class);
         String username = userLogin.getUsername();
         String password = new String(decrypt(userLogin.getPassword(), RSA.getPrivateKey(RSA.privateKeyString)));
-        if (!user.findUserIsTrue(username, password)) {
+        if (!user.userLoginForWebSocket(username, password)) {
             System.out.println("************************** login failed!");
             map.remove(username);
             session.sendMessage(new TextMessage("the username or password is wrong, login failed!"));
