@@ -1,7 +1,5 @@
 package com.am.socket.util;
 
-import sun.misc.BASE64Decoder;
-
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,7 +64,7 @@ public class RSA {
     public static PublicKey getPublicKey(String publicKeyString) {
         PublicKey publicKey = null;
         try {
-            java.security.spec.X509EncodedKeySpec bobPubKeySpec = new java.security.spec.X509EncodedKeySpec(new BASE64Decoder().decodeBuffer(publicKeyString));
+            java.security.spec.X509EncodedKeySpec bobPubKeySpec = new java.security.spec.X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString));
             java.security.KeyFactory keyFactory;
             keyFactory = java.security.KeyFactory.getInstance("RSA");
             publicKey = keyFactory.generatePublic(bobPubKeySpec);
@@ -80,7 +78,7 @@ public class RSA {
         PrivateKey privateKey = null;
         PKCS8EncodedKeySpec privateKeyCS8;
         try {
-            privateKeyCS8 = new PKCS8EncodedKeySpec(new BASE64Decoder().decodeBuffer(privateKeyString));
+            privateKeyCS8 = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyString));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             privateKey = keyFactory.generatePrivate(privateKeyCS8);
         } catch (Exception e) {
