@@ -3,7 +3,6 @@ package com.am.socket;
 import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
 import org.junit.Test;
-import sun.misc.BASE64Encoder;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
