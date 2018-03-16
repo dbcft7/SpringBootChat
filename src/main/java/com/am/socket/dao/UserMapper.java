@@ -1,4 +1,5 @@
 package com.am.socket.dao;
+import com.am.socket.model.Captcha;
 import com.am.socket.model.User;
 import com.am.socket.model.UserSalt;
 import org.apache.ibatis.annotations.Param;
@@ -20,5 +21,8 @@ public interface UserMapper {
     UserSalt findSaltFromSalt(@Param("username") String username);
 
     void activeAccount(@Param("userId") int userId);
+
+    void insertCaptchaIntoCaptcha(@Param("uuid") String uuid, @Param("captcha") String captcha);
+    Captcha findCaptchaFromCaptcha(@Param("uuid") String uuid);
 
 }

@@ -29,7 +29,7 @@ public class UserServiceTest {
 
     @Test
     public void userExist() throws Exception {
-        boolean result = userService.findUserIsTrue(username, password);
+        boolean result = userService.userLoginForWebSocket(username, password);
         System.out.println(result);
     }
 
