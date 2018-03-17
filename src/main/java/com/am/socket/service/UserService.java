@@ -172,7 +172,7 @@ public class UserService {
     }
 
 
-    public String generateCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String generateCaptcha(String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
         BufferedImage bufferedImage = new BufferedImage(68, 22, BufferedImage.TYPE_INT_BGR);
         Graphics graphics = bufferedImage.getGraphics();
         Color color = new Color(79, 230, 255);
@@ -191,13 +191,10 @@ public class UserService {
             stringBuffer.append(chars[index]);
         }
 
-        // generate uuid
-        UUID uuid = UUID.randomUUID();
-        String uuidString = uuid.toString();
         String captcha = stringBuffer.toString();
-        userMapper.insertCaptchaIntoCaptcha(uuidString, captcha);
+        userMapper.insertCaptchaIntoCaptcha(uuid, captcha);
 
         ImageIO.write(bufferedImage, "JPG", response.getOutputStream());
-        return uuidString;
+        return uuid;
     }
 }
