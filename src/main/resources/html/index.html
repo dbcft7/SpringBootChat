@@ -17,12 +17,16 @@
             <b>用户名</b>
             <br>
             <b>密码</b>
+            <br>
+            <img id="captchaImg" style="width:70px; height:20px; margin-top: 5px;" src='' alt='captcha' />
         </div>
         <div>
-            <input type="text" id="username" style="width: 100px" value="">
+            <input type="text" id="username" style="width: 100px">
             <br>
-            <input type="text" id="password" style="width: 100px" value="">
-            <input type="button" value="登陆" style="width: 60px" onclick="login()">
+            <input type="text" id="password" style="width: 100px">
+            <br>
+            <input type="text" id="captcha" style="width: 100px">
+            <input type="button" value="登陆" style="width: 60px" onclick="loginHttp()">
         </div>
     </div>
     <div id="chat" style="width:400px; height:80vh; float:left; margin-top: 30px;">
