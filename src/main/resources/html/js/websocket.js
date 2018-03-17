@@ -3,12 +3,17 @@ let SPLIT = '&';
 let LOGIN = 'login';
 let SEND2USER = 'send2User';
 let LOGIN_USERS = 'loginUsers';
+let URL = '127.0.0.1:8080';
+let HTTP_URL = 'http://127.0.0.1';
+let WS_URL = 'ws://127.0.0.1:8080';
+
+let uuid = '';
 
 if (!window.WebSocket) {
     window.WebSocket = window.MozWebSocket;
 }
 if (window.WebSocket) {
-    socket = new WebSocket("ws://127.0.0.1:8080/web-socket");
+    socket = new WebSocket(WS_URL + "/web-socket");
     socket.onmessage = function(event) {
         console.log('Message received from server: ' + event.data);
 
@@ -23,6 +28,8 @@ if (window.WebSocket) {
 } else {
     alert("你的浏览器不支持 WebSocket！");
 }
+getCaptcha();
+
 
 function clearContent() {
     document.getElementById("content").value = '';
@@ -71,4 +78,51 @@ function encrypt(msg) {
     encrypt.setPublicKey(publicKeyString);
     var encrypted = encrypt.encrypt(msg);
     return encrypted;
+}
+
+function guid() {
+    function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    }
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+
+function getCaptcha() {
+    uuid = guid();
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", "/user/captcha?uuid=" + uuid, true);
+    xmlhttp.responseType = "blob";
+    xmlhttp.onload = function() {
+        if (this.status == 200) {
+            let blob = this.response;
+            let img = document.getElementById("captchaImg");
+            img.src = window.URL.createObjectURL(blob);
+        }
+    }
+    xmlhttp.send();
+}
+
+function loginHttp() {
+    username = document.getElementById("username").value;
+    password = document.getElementById("password").value;
+    captcha = document.getElementById("captcha").value;
+    password = URLencode(encrypt(password));
+
+    let xmlhttp = new XMLHttpRequest();
+    requestUrl = '/user/login?username=' + username 
+                    + '&password=' + password 
+                    + '&captcha=' + captcha 
+                    + '&uuid=' + uuid;
+    xmlhttp.open("GET", requestUrl, true);
+    xmlhttp.responseType = "blob";
+    xmlhttp.onload = function() {
+        if (this.status == 200) {
+            console.log(this);
+        }
+    }
+    xmlhttp.send();
+}
+
+function URLencode(sStr) {
+    return escape(sStr).replace(/\+/g, '%2B').replace(/\"/g,'%22').replace(/\'/g, '%27').replace(/\//g,'%2F');  
 }

@@ -47,9 +47,8 @@ public class UserCtrl {
     }
 
     @GetMapping("/captcha")
-    public String generateCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String uuid = user.generateCaptcha(request, response);
-        return uuid;
+    public void generateCaptcha(@RequestParam("uuid") String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        user.generateCaptcha(uuid, request, response);
     }
 
 }
