@@ -121,6 +121,7 @@ function loginHttp() {
         }
     }
     xmlhttp.send();
+    login();
 }
 
 function URLencode(sStr) {
