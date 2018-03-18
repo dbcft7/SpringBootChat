@@ -17,10 +17,10 @@ import static com.am.socket.util.RSA.generateKeyPair;
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = Application.class)
 public class RSATest {
-    private String string = "111111";
+    private String string = "iloveyou";
 
     @Test
-    public void RSR() throws Exception {
+    public void RSA() throws Exception {
         PublicKey publicKey = RSA.getPublicKey(RSA.publicKeyString);
         PrivateKey privateKey = RSA.getPrivateKey(RSA.privateKeyString);
         System.out.println("public key is:  "+ new String(Base64.getEncoder().encode(publicKey.getEncoded())));

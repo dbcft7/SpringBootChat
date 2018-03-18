@@ -6,6 +6,7 @@ let LOGIN_USERS = 'loginUsers';
 let URL = '127.0.0.1:8080';
 let HTTP_URL = 'http://127.0.0.1';
 let WS_URL = 'ws://127.0.0.1:8080';
+let OFFLINE = "offline";
 
 let uuid = '';
 
@@ -126,4 +127,12 @@ function loginHttp() {
 
 function URLencode(sStr) {
     return escape(sStr).replace(/\+/g, '%2B').replace(/\"/g,'%22').replace(/\'/g, '%27').replace(/\//g,'%2F');  
+}
+
+function sendOfflineMessage() {
+    username = document.getElementById("aimUsername").value;
+    msg = document.getElementById("message").value;
+    message = OFFLINE + SPLIT + username + SPLIT + msg;
+    console.log(message);
+    send(message);
 }

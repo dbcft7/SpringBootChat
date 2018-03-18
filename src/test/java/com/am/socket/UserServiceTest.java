@@ -17,9 +17,9 @@ import java.util.List;
 @SpringBootTest(classes = Application.class)
 public class UserServiceTest {
 
-    private String username = "angle";
+    private String username = "mazyi";
     private String password = "dbcft";
-    private String email = "496514152@qq.com";
+    private String email = "1721591676@qq.com";
 
     @Resource
     private UserService userService;
@@ -35,8 +35,8 @@ public class UserServiceTest {
 
     @Test
     public void userRegister() throws Exception {
-        String password = "pd98AP9Zoju0K+zhuW9zVVYg3MHzWfCuXz3eg4CJZwYggrc10u+g9tGSFAgZ6zXLdLWmRd0ewu3fcthb5SrYNRtBMvwlnFD7c1ygfK/8TdsG8pX5BfEbeSJsCNolj4pLcVr4T0s+20PLicyZJzudOvRecjxddIPmNaZ/ZgU6chg=";
-        String result = userService.userRegister("anqi", password, email);
+        String password = "bdZ1/vlRh9GCDEE52sw7zgpmdAEZ5pJlHUFe+/MXlplOs+Ru/hQhW1TVomDbnqezBzOU373/C07gV3AGtPg0MvPvlqJTgZp2OKJGyGmOfqmKbMHE4XyKizDfSgN9yHQ9ylRlCQxSlnnZwIvQjZhsDgJbMHSsdcNxhjUaYGLEXUU=";
+        String result = userService.userRegister(username, password, email);
         System.out.println(result);
     }
 
@@ -72,6 +72,15 @@ public class UserServiceTest {
         userSalt.setUsername("angle");
         userMapper.insertSaltIntoSalt("123456","angle");
         System.out.println("successful!");
+    }
+
+    @Test
+    public void storeOfflineMessage() {
+        String senderName = "angle";
+        String receiverName = "anqi";
+        String date = "2018-10-22 12:12:12";
+        String message = "hello!";
+        userService.storeOfflineMessage(senderName, receiverName, message, date);
     }
 
 }

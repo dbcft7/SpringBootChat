@@ -1,4 +1,5 @@
 package com.am.socket.service;
+import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.UserSalt;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
@@ -14,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static com.am.socket.util.RSA.decrypt;
 
@@ -26,12 +27,16 @@ import static com.am.socket.util.RSA.decrypt;
 public class UserService {
     @Resource
     private UserMapper userMapper;
+    private static final int ACTIVATE = 1;
+    private static final int NOTRECEIVED = 0;
+    private static final int RECEIVED = 1;
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String password, String captcha, String uuid) throws Exception {
+    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
+        String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
         System.out.println("**************************8captcha from DB is:" + captchaFromDB);
         String passwordHashed = "";
@@ -50,7 +55,7 @@ public class UserService {
             System.out.println("login successfully!");
             return true;
         } else {
-            System.out.println("username or password is wrong!");
+            System.out.println("findUserIsTrue: username or password is wrong!");
             return false;
         }
     }
@@ -70,9 +75,13 @@ public class UserService {
             System.out.println("login successfully!");
             return true;
         } else {
-            System.out.println("username or password is wrong!");
+            System.out.println("userLoginForWebSocket: username or password is wrong!");
             return false;
         }
+    }
+
+    public boolean findUserFromDB(String username) {
+        return (userMapper.findUserFromAccount(username) != null);
     }
 
     public List<String> moreUserExist(List<String> username) {
@@ -83,6 +92,8 @@ public class UserService {
         }
         return user;
     }
+
+
 
     public String userRegister(String username, String passwordRSA, String email) throws Exception {
         User user = new User();
@@ -156,7 +167,7 @@ public class UserService {
     public String processActivate(String email, String activeCode) {
         User user = userMapper.findEmailFromAccount(email);
         if (user != null) {
-            if (user.getActive() != 1) {
+            if (user.getActive() != ACTIVATE) {
                 if (user.getActiveCode().equals(activeCode)) {
                     userMapper.activeAccount(user.getId());
                     return "Activate successfully!";
@@ -197,4 +208,53 @@ public class UserService {
         ImageIO.write(bufferedImage, "JPG", response.getOutputStream());
         return uuid;
     }
+
+    public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime) {
+        String returnMessage = "";
+        if (userMapper.findUserFromAccount(receiverName) == null) {
+            returnMessage = "the user you want to send message to is not exist!";
+            return returnMessage;
+        }
+
+        OfflineMessage offlineMessage = new OfflineMessage();
+        int senderId = userMapper.findUserFromAccount(senderName).getId();
+        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date sendTime = new Date();
+
+        try {
+            sendTime = dateFormat.parse(dateTime);
+            System.out.println("***************** send time is: " + sendTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        offlineMessage.setSendTime(sendTime);
+        offlineMessage.setSenderId(senderId);
+        offlineMessage.setReceiverId(receiverId);
+        offlineMessage.setReceiveState(NOTRECEIVED);
+        offlineMessage.setOfflineMessage(message);
+        userMapper.insertMessageIntoOfflineMessage(offlineMessage);
+        System.out.println("*************** store offline message successfully!");
+        returnMessage = "sent offline message successfully!";
+        return returnMessage;
+    }
+
+    public List<String> sendOfflineMessage(String receiverName) {
+        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
+        List<OfflineMessage> offlineMessages = userMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
+        List<String> sendMessage = new ArrayList<>();
+        for (OfflineMessage message : offlineMessages) {
+            String senderName = userMapper.fineUserIdFromAccount(message.getSenderId()).getUsername();
+            String messageFormat = senderName + ": " + message.getOfflineMessage();
+            sendMessage.add(messageFormat);
+            message.setReceiveState(RECEIVED);
+            Date receivedTime = new Date();
+            message.setReceiveTime(receivedTime);
+            userMapper.updateSendStateOfOfflineMessage(message);
+        }
+        return sendMessage;
+    }
+
 }
