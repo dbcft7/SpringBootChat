@@ -6,6 +6,8 @@ import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,6 +33,8 @@ public class UserService {
     private static final int NOTRECEIVED = 0;
     private static final int RECEIVED = 1;
 
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
     public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid) throws Exception {
@@ -38,7 +42,7 @@ public class UserService {
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
-        System.out.println("**************************8captcha from DB is:" + captchaFromDB);
+        System.out.println("**************************captcha from DB is:" + captchaFromDB);
         String passwordHashed = "";
         if (userSalt != null) {
             String salt = userSalt.getSalt();
@@ -46,6 +50,7 @@ public class UserService {
         }
         if (!captcha.equalsIgnoreCase(captchaFromDB)) {
             System.out.println("the captcha is wrong!");
+            log.info("the captcha is wrong!");
             return false;
         }
         if (userFromAccount == null) {
@@ -53,9 +58,11 @@ public class UserService {
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
             System.out.println("login successfully!");
+            log.info("login successfully!");
             return true;
         } else {
             System.out.println("findUserIsTrue: username or password is wrong!");
+            log.info("findUserIsTrue: username or password is wrong!");
             return false;
         }
     }
@@ -70,12 +77,15 @@ public class UserService {
         }
         if (userFromAccount == null) {
             System.out.println("the user is not exist!");
+            log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
             System.out.println("login successfully!");
+            log.info("login successfully!");
             return true;
         } else {
             System.out.println("userLoginForWebSocket: username or password is wrong!");
+            log.info("userLoginForWebSocket: username or password is wrong!");
             return false;
         }
     }
@@ -100,12 +110,14 @@ public class UserService {
         user.setUsername(username);
         String password = new String(RSA.decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         System.out.println("**********************" + password);
+        log.info("userRegister   password is: " + password);
         String salt = Hash.generateSalt();
         String passwordSalted = Hash.encrypt(password + salt);
         user.setPassword(passwordSalted);
         user.setEmail(email);
         String activeCode = Hash.encrypt(email);
         System.out.println("**********************" + activeCode);
+        log.info("userRegister   active code is: " + activeCode);
         user.setActiveCode(activeCode);
         User userFromAccount = userMapper.findUserFromAccount(username);
 
@@ -162,6 +174,7 @@ public class UserService {
 
         SendEmail.send(email, content.toString());
         System.out.println("email sent successfully!");
+        log.info("email sent successfully!");
     }
 
     public String processActivate(String email, String activeCode) {
@@ -170,7 +183,7 @@ public class UserService {
             if (user.getActive() != ACTIVATE) {
                 if (user.getActiveCode().equals(activeCode)) {
                     userMapper.activeAccount(user.getId());
-                    return "Activate successfully!";
+                    return "Activated successfully!";
                 } else {
                     return "Activation code is wrong!";
                 }
@@ -209,11 +222,9 @@ public class UserService {
         return uuid;
     }
 
-    public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime) {
-        String returnMessage = "";
+    public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime, int receiveState) {
         if (userMapper.findUserFromAccount(receiverName) == null) {
-            returnMessage = "the user you want to send message to is not exist!";
-            return returnMessage;
+            return "the user you want to send message to is not exist!";
         }
 
         OfflineMessage offlineMessage = new OfflineMessage();
@@ -233,15 +244,14 @@ public class UserService {
         offlineMessage.setSendTime(sendTime);
         offlineMessage.setSenderId(senderId);
         offlineMessage.setReceiverId(receiverId);
-        offlineMessage.setReceiveState(NOTRECEIVED);
+        offlineMessage.setReceiveState(receiveState);
         offlineMessage.setOfflineMessage(message);
         userMapper.insertMessageIntoOfflineMessage(offlineMessage);
         System.out.println("*************** store offline message successfully!");
-        returnMessage = "sent offline message successfully!";
-        return returnMessage;
+        return "sent offline message successfully!";
     }
 
-    public List<String> sendOfflineMessage(String receiverName) {
+    public List<String> getOfflineMessage(String receiverName) {
         int receiverId = userMapper.findUserFromAccount(receiverName).getId();
         List<OfflineMessage> offlineMessages = userMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
         List<String> sendMessage = new ArrayList<>();

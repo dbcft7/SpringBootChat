@@ -1,8 +1,6 @@
 package com.am.socket.service;
 
 import com.alibaba.fastjson.JSON;
-import com.am.socket.dao.UserMapper;
-import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import org.springframework.web.socket.CloseStatus;
@@ -12,18 +10,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
-import static com.am.socket.dao.UserMapper.*;
 import static com.am.socket.util.RSA.decrypt;
-import static com.am.socket.util.RSA.getPrivateKey;
 
 @Service
 public class WebSocketService extends TextWebSocketHandler {
@@ -36,7 +28,7 @@ public class WebSocketService extends TextWebSocketHandler {
     private static final String SEND2USER = "send2User";
     private static final String LOGIN_USERS = "loginUsers";
     private static final String OFFLINE_MESSAGE = "offline";
-    private static final int NOTRECEIVE = 0;
+    private static final int NOTRECEIVED = 0;
     private static final int RECEIVED = 1;
 
     @Resource
@@ -86,7 +78,6 @@ public class WebSocketService extends TextWebSocketHandler {
             map.remove(username);
             session.sendMessage(new TextMessage("the username or password is wrong, login failed!"));
         } else {
-            System.out.println("*************************"+message[2]);
             if (!map.containsValue(session)) {
                 map.put(username, session);
             } else {
@@ -104,7 +95,7 @@ public class WebSocketService extends TextWebSocketHandler {
             for (WebSocketSession sessionSend : map.values()) {
                 handleLoginUsers(sessionSend);
             }
-            List<String> offlineMessages = user.sendOfflineMessage(username);
+            List<String> offlineMessages = user.getOfflineMessage(username);
             if (offlineMessages != null && offlineMessages.size() != 0){
                 for (String string : offlineMessages) {
                     session.sendMessage(new TextMessage(string));
@@ -156,8 +147,15 @@ public class WebSocketService extends TextWebSocketHandler {
                 break;
             }
         }
-        String send = user.storeOfflineMessage(senderName, message[1], message[2], message[3]);
-        session.sendMessage(new TextMessage(send));
+        if (map.containsKey(message[1])) {
+            WebSocketSession sendSession = map.get(message[1]);
+            sendSession.sendMessage(new TextMessage(senderName + ": " + message[2]));
+            String send = user.storeOfflineMessage(senderName, message[1], message[2], message[3], RECEIVED);
+            session.sendMessage(new TextMessage(send));
+        } else {
+            String send = user.storeOfflineMessage(senderName, message[1], message[2], message[3], NOTRECEIVED);
+            session.sendMessage(new TextMessage(send));
+        }
     }
 
 }

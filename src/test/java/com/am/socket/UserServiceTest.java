@@ -80,7 +80,7 @@ public class UserServiceTest {
         String receiverName = "anqi";
         String date = "2018-10-22 12:12:12";
         String message = "hello!";
-        userService.storeOfflineMessage(senderName, receiverName, message, date);
+        userService.storeOfflineMessage(senderName, receiverName, message, date, 0);
     }
 
 }

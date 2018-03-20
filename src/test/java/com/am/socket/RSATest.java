@@ -4,11 +4,13 @@ import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
+import java.util.logging.Logger;
 
 import static com.am.socket.util.RSA.decrypt;
 import static com.am.socket.util.RSA.encrypt;
@@ -18,6 +20,7 @@ import static com.am.socket.util.RSA.generateKeyPair;
 //@SpringBootTest(classes = Application.class)
 public class RSATest {
     private String string = "iloveyou";
+    private org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Test
     public void RSA() throws Exception {
@@ -53,6 +56,12 @@ public class RSATest {
     @Test
     public void sendEmail() {
         SendEmail.send("496514152@qq.com", "hello!");
+    }
+
+    @Test
+    public void testLog() {
+        log.info("****************Test Log******************");
+
     }
 
 }
