@@ -38,12 +38,15 @@ public class UserService {
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid, HttpSession session) throws Exception {
-        User userFromAccount = userMapper.findUserFromAccount(username);
+    public boolean findUserIsTrue(String username, String passwordRSA, String captchaString, String uuid, HttpSession session) throws Exception {
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
-        String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
-        log.info("captcha from DB is:" + captchaFromDB);
+        Captcha captcha = userMapper.findCaptchaFromCaptcha(uuid);
+        if (captcha == null || !captchaString.equalsIgnoreCase(captcha.getCaptcha())) {
+            log.info("the captcha is wrong!");
+            return false;
+        }
+
         String passwordHashed = "";
         if (userSalt != null) {
             String salt = userSalt.getSalt();
