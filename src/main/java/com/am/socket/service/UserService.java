@@ -1,23 +1,27 @@
 package com.am.socket.service;
+import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.UserSalt;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static com.am.socket.util.RSA.decrypt;
 
@@ -26,31 +30,38 @@ import static com.am.socket.util.RSA.decrypt;
 public class UserService {
     @Resource
     private UserMapper userMapper;
+    private static final int ACTIVATE = 1;
+    private static final int NOTRECEIVED = 0;
+    private static final int RECEIVED = 1;
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String password, String captcha, String uuid) throws Exception {
+    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid, HttpSession session) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
+        String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
-        System.out.println("**************************8captcha from DB is:" + captchaFromDB);
+        log.info("captcha from DB is:" + captchaFromDB);
         String passwordHashed = "";
         if (userSalt != null) {
             String salt = userSalt.getSalt();
             passwordHashed = Hash.encrypt(password + salt);
         }
         if (!captcha.equalsIgnoreCase(captchaFromDB)) {
-            System.out.println("the captcha is wrong!");
+            log.info("the captcha is wrong!");
             return false;
         }
         if (userFromAccount == null) {
-            System.out.println("the user is not exist!");
+            log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
-            System.out.println("login successfully!");
+            log.info("login successfully!");
+            session.setAttribute("user", userFromAccount);
             return true;
         } else {
-            System.out.println("username or password is wrong!");
+            log.info("findUserIsTrue: username or password is wrong!");
             return false;
         }
     }
@@ -64,15 +75,24 @@ public class UserService {
             passwordHashed = Hash.encrypt(password + salt);
         }
         if (userFromAccount == null) {
-            System.out.println("the user is not exist!");
+            log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
-            System.out.println("login successfully!");
+            log.info("login successfully!");
             return true;
         } else {
-            System.out.println("username or password is wrong!");
+            log.info("userLoginForWebSocket: username or password is wrong!");
             return false;
         }
+    }
+
+    public String userLogout(HttpSession session) {
+        session.invalidate();
+        return "logout successfully!";
+    }
+
+    public boolean findUserFromDB(String username) {
+        return (userMapper.findUserFromAccount(username) != null);
     }
 
     public List<String> moreUserExist(List<String> username) {
@@ -88,13 +108,13 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         String password = new String(RSA.decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
-        System.out.println("**********************" + password);
+        log.info("userRegister   password is: " + password);
         String salt = Hash.generateSalt();
         String passwordSalted = Hash.encrypt(password + salt);
         user.setPassword(passwordSalted);
         user.setEmail(email);
         String activeCode = Hash.encrypt(email);
-        System.out.println("**********************" + activeCode);
+        log.info("userRegister   active code is: " + activeCode);
         user.setActiveCode(activeCode);
         User userFromAccount = userMapper.findUserFromAccount(username);
 
@@ -108,15 +128,15 @@ public class UserService {
         }
     }
 
-    public String userAddFriend(String username, String friendName) {
-        User userFromAccount = userMapper.findUserFromAccount(username);
+    public String userAddFriend(HttpSession session, String friendName) {
+        User user = (User) session.getAttribute("user");
         User friendFromAccount = userMapper.findUserFromAccount(friendName);
 
         if (friendFromAccount == null) {
             return "the user you want to add to a friend is not exist!";
         }
 
-        List<User> friendList = userFindFriend(username);
+        List<User> friendList = userFindFriend(session);
 
         for (User friend : friendList) {
             if (friend.getUsername().equals(friendName)) {
@@ -124,16 +144,16 @@ public class UserService {
             }
         }
 
-        int userId = userFromAccount.getId();
+        int userId = user.getId();
         int friendId = friendFromAccount.getId();
         userMapper.insertUserIntoFriend(userId, friendId);
         userMapper.insertUserIntoFriend(friendId, userId);
         return "add friend successfully!";
     }
 
-    public List<User> userFindFriend(String username) {
-        User userFromAccount = userMapper.findUserFromAccount(username);
-        int userId = userFromAccount.getId();
+    public List<User> userFindFriend(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
         List<User> friendList = userMapper.findUserFromFriend(userId);
         return friendList;
     }
@@ -150,16 +170,16 @@ public class UserService {
         content.append("\">请点击此链接激活账号</a>");
 
         SendEmail.send(email, content.toString());
-        System.out.println("email sent successfully!");
+        log.info("email sent successfully!");
     }
 
     public String processActivate(String email, String activeCode) {
         User user = userMapper.findEmailFromAccount(email);
         if (user != null) {
-            if (user.getActive() != 1) {
+            if (user.getActive() != ACTIVATE) {
                 if (user.getActiveCode().equals(activeCode)) {
                     userMapper.activeAccount(user.getId());
-                    return "Activate successfully!";
+                    return "Activated successfully!";
                 } else {
                     return "Activation code is wrong!";
                 }
@@ -170,7 +190,6 @@ public class UserService {
             return "the user is not exist!";
         }
     }
-
 
     public String generateCaptcha(String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
         BufferedImage bufferedImage = new BufferedImage(68, 22, BufferedImage.TYPE_INT_BGR);
@@ -197,4 +216,54 @@ public class UserService {
         ImageIO.write(bufferedImage, "JPG", response.getOutputStream());
         return uuid;
     }
+
+    public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime, int receiveState) {
+        if (userMapper.findUserFromAccount(receiverName) == null) {
+            return "the user you want to send message to is not exist!";
+        }
+
+        OfflineMessage offlineMessage = new OfflineMessage();
+        int senderId = userMapper.findUserFromAccount(senderName).getId();
+        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date sendTime = new Date();
+
+        try {
+            sendTime = dateFormat.parse(dateTime);
+            log.info("send time is: " + sendTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        offlineMessage.setSendTime(sendTime);
+        offlineMessage.setSenderId(senderId);
+        offlineMessage.setReceiverId(receiverId);
+        offlineMessage.setReceiveState(receiveState);
+        offlineMessage.setOfflineMessage(message);
+        userMapper.insertMessageIntoOfflineMessage(offlineMessage);
+        log.info("*************** store offline message successfully!");
+        return "sent offline message successfully!";
+    }
+
+    public List<String> getOfflineMessage(String receiverName) {
+        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
+        List<OfflineMessage> offlineMessages = userMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
+        List<String> sendMessage = new ArrayList<>();
+        for (OfflineMessage message : offlineMessages) {
+            String senderName = userMapper.fineUserIdFromAccount(message.getSenderId()).getUsername();
+            String messageFormat = senderName + ": " + message.getOfflineMessage();
+            sendMessage.add(messageFormat);
+            message.setReceiveState(RECEIVED);
+            Date receivedTime = new Date();
+            message.setReceiveTime(receivedTime);
+            userMapper.updateSendStateOfOfflineMessage(message);
+        }
+        return sendMessage;
+    }
+
+    public String sendMoment (HttpSession session) {
+        return "send Moment successfully!";
+    }
+
 }

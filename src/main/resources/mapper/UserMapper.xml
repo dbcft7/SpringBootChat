@@ -8,18 +8,22 @@
     </insert>
 
     <select id="findUserFromAccount" parameterType="String" resultType="User">
-        SELECT * FROM account WHERE username=#{username}
+        SELECT * FROM account WHERE username = #{username}
+    </select>
+
+    <select id="fineUserIdFromAccount" parameterType="int" resultType="User">
+        SELECT * FROM account WHERE user_id = #{userId}
     </select>
 
     <select id="findEmailFromAccount" parameterType="String" resultType="User">
-        SELECT * FROM account WHERE email=#{email}
+        SELECT * FROM account WHERE email = #{email}
     </select>
 
     <select id="findMoreUserFromAccount" resultType="User">
         SELECT *
         FROM account u
         WHERE user_name in
-        <foreach item="more_username" index="index" collection="list"
+        <foreach item = "more_username" index = "index" collection = "list"
                  open="(" separator="," close=")">
             #{more_username}
         </foreach>
@@ -47,7 +51,7 @@
     </select>
 
     <update id="activeAccount" parameterType="int">
-        UPDATE account set activated_state = 1
+        UPDATE account SET activated_state = 1
         WHERE user_id = #{userId}
     </update>
 
@@ -60,6 +64,23 @@
         SELECT * FROM captcha
         WHERE uuid = #{uuid}
     </select>
+
+    <insert id="insertMessageIntoOfflineMessage" parameterType="OfflineMessage">
+        INSERT INTO offline_message(sender_id, receiver_id, offline_message, send_time, receive_state)
+        VALUES (#{senderId}, #{receiverId}, #{offlineMessage}, #{sendTime}, #{receiveState})
+    </insert>
+
+    <select id="findMessageFromOfflineMessage" parameterType="int" resultType="OfflineMessage">
+        SELECT * FROM offline_message
+        WHERE receiver_id = #{receiverId} AND receive_state = #{receiveState}
+    </select>
+
+    <update id="updateSendStateOfOfflineMessage" parameterType="OfflineMessage">
+        UPDATE offline_message SET receive_time = #{receiveTime}, receive_state = #{receiveState}
+        WHERE message_id = #{messageId}
+    </update>
+
+
 
 </mapper>
 

@@ -1,5 +1,6 @@
 package com.am.socket.dao;
 import com.am.socket.model.Captcha;
+import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.User;
 import com.am.socket.model.UserSalt;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +13,7 @@ public interface UserMapper {
     void insertUserIntoAccount(User user);
     User findUserFromAccount(@Param("username") String username);
     User findEmailFromAccount(@Param("email") String email);
+    User fineUserIdFromAccount(@Param("userId") int userId);
     List<User> findMoreUserFromAccount(List<String> moreUsername);
 
     void insertUserIntoFriend(@Param("userId") int userId, @Param("friendId") int friendId);
@@ -24,5 +26,9 @@ public interface UserMapper {
 
     void insertCaptchaIntoCaptcha(@Param("uuid") String uuid, @Param("captcha") String captcha);
     Captcha findCaptchaFromCaptcha(@Param("uuid") String uuid);
+
+    void insertMessageIntoOfflineMessage(OfflineMessage offline);
+    List<OfflineMessage> findMessageFromOfflineMessage(@Param("receiverId") int receiverId, @Param("receiveState") int receiveState);
+    void updateSendStateOfOfflineMessage(OfflineMessage offline);
 
 }
