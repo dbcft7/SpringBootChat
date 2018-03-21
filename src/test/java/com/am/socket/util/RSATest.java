@@ -1,4 +1,4 @@
-package com.am.socket;
+package com.am.socket.util;
 
 import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
