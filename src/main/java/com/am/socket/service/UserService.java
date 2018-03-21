@@ -1,4 +1,5 @@
 package com.am.socket.service;
+import com.am.socket.model.Captcha;
 import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.UserSalt;
 import com.am.socket.util.Hash;
@@ -38,27 +39,27 @@ public class UserService {
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid, HttpSession session) throws Exception {
-        User userFromAccount = userMapper.findUserFromAccount(username);
+    public boolean findUserIsTrue(String username, String passwordRSA, String captchaString, String uuid, HttpSession session) throws Exception {
+        User userFromDB = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
-        String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
-        log.info("captcha from DB is:" + captchaFromDB);
+        Captcha captcha = userMapper.findCaptchaFromCaptcha(uuid);
+        if (captcha == null || !captchaString.equalsIgnoreCase(captcha.getCaptcha())) {
+            log.info("the captcha is wrong!");
+            return false;
+        }
+
         String passwordHashed = "";
         if (userSalt != null) {
             String salt = userSalt.getSalt();
             passwordHashed = Hash.encrypt(password + salt);
         }
-        if (!captcha.equalsIgnoreCase(captchaFromDB)) {
-            log.info("the captcha is wrong!");
-            return false;
-        }
-        if (userFromAccount == null) {
+        if (userFromDB == null) {
             log.info("the user is not exist!");
             return false;
-        } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
+        } else if (username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())) {
             log.info("login successfully!");
-            session.setAttribute("user", userFromAccount);
+            session.setAttribute("user", userFromDB);
             return true;
         } else {
             log.info("findUserIsTrue: username or password is wrong!");

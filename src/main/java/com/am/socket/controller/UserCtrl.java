@@ -26,6 +26,7 @@ public class UserCtrl {
     public String userLogout(HttpSession session) {
         return user.userLogout(session);
     }
+
     //   parameter from front-end: ["mazy","angle"]
     @PostMapping("/checkUser")
     public List<String> moreUserFind(@RequestBody List<String> users) {

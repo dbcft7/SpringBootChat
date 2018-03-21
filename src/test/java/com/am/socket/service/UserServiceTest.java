@@ -1,6 +1,7 @@
-package com.am.socket;
+package com.am.socket.service;
 
 
+import com.am.socket.Application;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.User;
 import com.am.socket.model.UserSalt;

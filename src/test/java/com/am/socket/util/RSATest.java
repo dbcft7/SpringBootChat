@@ -1,10 +1,14 @@
-package com.am.socket;
+package com.am.socket.util;
 
+import com.am.socket.Application;
 import com.am.socket.util.Hash;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -16,8 +20,8 @@ import static com.am.socket.util.RSA.decrypt;
 import static com.am.socket.util.RSA.encrypt;
 import static com.am.socket.util.RSA.generateKeyPair;
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = Application.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class RSATest {
     private String string = "iloveyou";
     private org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
