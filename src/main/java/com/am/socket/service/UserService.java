@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -37,31 +38,29 @@ public class UserService {
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid) throws Exception {
+    public boolean findUserIsTrue(String username, String passwordRSA, String captcha, String uuid, HttpSession session) throws Exception {
         User userFromAccount = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
         String captchaFromDB = userMapper.findCaptchaFromCaptcha(uuid).getCaptcha();
-        System.out.println("**************************captcha from DB is:" + captchaFromDB);
+        log.info("captcha from DB is:" + captchaFromDB);
         String passwordHashed = "";
         if (userSalt != null) {
             String salt = userSalt.getSalt();
             passwordHashed = Hash.encrypt(password + salt);
         }
         if (!captcha.equalsIgnoreCase(captchaFromDB)) {
-            System.out.println("the captcha is wrong!");
             log.info("the captcha is wrong!");
             return false;
         }
         if (userFromAccount == null) {
-            System.out.println("the user is not exist!");
+            log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
-            System.out.println("login successfully!");
             log.info("login successfully!");
+            session.setAttribute("user", userFromAccount);
             return true;
         } else {
-            System.out.println("findUserIsTrue: username or password is wrong!");
             log.info("findUserIsTrue: username or password is wrong!");
             return false;
         }
@@ -76,18 +75,20 @@ public class UserService {
             passwordHashed = Hash.encrypt(password + salt);
         }
         if (userFromAccount == null) {
-            System.out.println("the user is not exist!");
             log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
-            System.out.println("login successfully!");
             log.info("login successfully!");
             return true;
         } else {
-            System.out.println("userLoginForWebSocket: username or password is wrong!");
             log.info("userLoginForWebSocket: username or password is wrong!");
             return false;
         }
+    }
+
+    public String userLogout(HttpSession session) {
+        session.invalidate();
+        return "logout successfully!";
     }
 
     public boolean findUserFromDB(String username) {
@@ -103,20 +104,16 @@ public class UserService {
         return user;
     }
 
-
-
     public String userRegister(String username, String passwordRSA, String email) throws Exception {
         User user = new User();
         user.setUsername(username);
         String password = new String(RSA.decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
-        System.out.println("**********************" + password);
         log.info("userRegister   password is: " + password);
         String salt = Hash.generateSalt();
         String passwordSalted = Hash.encrypt(password + salt);
         user.setPassword(passwordSalted);
         user.setEmail(email);
         String activeCode = Hash.encrypt(email);
-        System.out.println("**********************" + activeCode);
         log.info("userRegister   active code is: " + activeCode);
         user.setActiveCode(activeCode);
         User userFromAccount = userMapper.findUserFromAccount(username);
@@ -131,15 +128,15 @@ public class UserService {
         }
     }
 
-    public String userAddFriend(String username, String friendName) {
-        User userFromAccount = userMapper.findUserFromAccount(username);
+    public String userAddFriend(HttpSession session, String friendName) {
+        User user = (User) session.getAttribute("user");
         User friendFromAccount = userMapper.findUserFromAccount(friendName);
 
         if (friendFromAccount == null) {
             return "the user you want to add to a friend is not exist!";
         }
 
-        List<User> friendList = userFindFriend(username);
+        List<User> friendList = userFindFriend(session);
 
         for (User friend : friendList) {
             if (friend.getUsername().equals(friendName)) {
@@ -147,16 +144,16 @@ public class UserService {
             }
         }
 
-        int userId = userFromAccount.getId();
+        int userId = user.getId();
         int friendId = friendFromAccount.getId();
         userMapper.insertUserIntoFriend(userId, friendId);
         userMapper.insertUserIntoFriend(friendId, userId);
         return "add friend successfully!";
     }
 
-    public List<User> userFindFriend(String username) {
-        User userFromAccount = userMapper.findUserFromAccount(username);
-        int userId = userFromAccount.getId();
+    public List<User> userFindFriend(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
         List<User> friendList = userMapper.findUserFromFriend(userId);
         return friendList;
     }
@@ -173,7 +170,6 @@ public class UserService {
         content.append("\">请点击此链接激活账号</a>");
 
         SendEmail.send(email, content.toString());
-        System.out.println("email sent successfully!");
         log.info("email sent successfully!");
     }
 
@@ -194,7 +190,6 @@ public class UserService {
             return "the user is not exist!";
         }
     }
-
 
     public String generateCaptcha(String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
         BufferedImage bufferedImage = new BufferedImage(68, 22, BufferedImage.TYPE_INT_BGR);
@@ -236,7 +231,7 @@ public class UserService {
 
         try {
             sendTime = dateFormat.parse(dateTime);
-            System.out.println("***************** send time is: " + sendTime);
+            log.info("send time is: " + sendTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -247,7 +242,7 @@ public class UserService {
         offlineMessage.setReceiveState(receiveState);
         offlineMessage.setOfflineMessage(message);
         userMapper.insertMessageIntoOfflineMessage(offlineMessage);
-        System.out.println("*************** store offline message successfully!");
+        log.info("*************** store offline message successfully!");
         return "sent offline message successfully!";
     }
 
@@ -265,6 +260,10 @@ public class UserService {
             userMapper.updateSendStateOfOfflineMessage(message);
         }
         return sendMessage;
+    }
+
+    public String sendMoment (HttpSession session) {
+        return "send Moment successfully!";
     }
 
 }
