@@ -1,4 +1,5 @@
 package com.am.socket.controller;
+import com.am.socket.model.Moment;
 import com.am.socket.model.User;
 import com.am.socket.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -58,4 +59,23 @@ public class UserCtrl {
         user.generateCaptcha(uuid, request, response);
     }
 
+    @GetMapping("/sendMoment")
+    public String sendMoment(@RequestParam("content") String content, HttpSession session) {
+       return user.sendMoment(session, content);
+    }
+
+    @GetMapping("/getPersonalMoments")
+    public List<Moment> getPersonalMoments(HttpSession session) {
+        return user.getPersonalMoment(session);
+    }
+
+    @GetMapping("/getFriendsMoments")
+    public List<Moment> getFriendsMoments(HttpSession session) {
+        return user.getFriendsMoment(session);
+    }
+
+    @GetMapping("/deleteMoment")
+    public String deleteMoment(HttpSession session, Moment moment) {
+        return user.deleteMoment(session, moment);
+    }
 }

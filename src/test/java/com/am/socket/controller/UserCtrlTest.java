@@ -38,8 +38,19 @@ public class UserCtrlTest {
                 get(loginUrl)
                         .param("username", "mazyi")
                         .param("password", password)
-                        .param("captcha", "1234")
-                        .param("uuid", "1234")
+                        .param("captcha", "TW6T")
+                        .param("uuid", "02a123d2-acf0-46b2-9ba7-43eaa0b34f30")
+        ).andDo(print());
+    }
+
+    @Test
+    public void sendMoment () throws Exception{
+        login();
+        String content = "the weather is so good today!";
+        String sendMomentUrl = preUrl + "/sendMoment";
+        mockMvc.perform(
+                get(sendMomentUrl)
+                        .param("content", content)
         ).andDo(print());
     }
 

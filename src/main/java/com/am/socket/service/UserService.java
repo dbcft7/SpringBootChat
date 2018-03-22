@@ -1,10 +1,7 @@
 package com.am.socket.service;
-import com.am.socket.model.Captcha;
-import com.am.socket.model.OfflineMessage;
-import com.am.socket.model.UserSalt;
+import com.am.socket.model.*;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
-import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
 import org.slf4j.Logger;
@@ -34,6 +31,7 @@ public class UserService {
     private static final int ACTIVATE = 1;
     private static final int NOTRECEIVED = 0;
     private static final int RECEIVED = 1;
+    private static final String SESSION_ATTRIBUTE = "user";
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -59,7 +57,7 @@ public class UserService {
             return false;
         } else if (username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())) {
             log.info("login successfully!");
-            session.setAttribute("user", userFromDB);
+            session.setAttribute(SESSION_ATTRIBUTE, userFromDB);
             return true;
         } else {
             log.info("findUserIsTrue: username or password is wrong!");
@@ -130,7 +128,7 @@ public class UserService {
     }
 
     public String userAddFriend(HttpSession session, String friendName) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         User friendFromAccount = userMapper.findUserFromAccount(friendName);
 
         if (friendFromAccount == null) {
@@ -153,7 +151,7 @@ public class UserService {
     }
 
     public List<User> userFindFriend(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         int userId = user.getId();
         List<User> friendList = userMapper.findUserFromFriend(userId);
         return friendList;
@@ -263,8 +261,50 @@ public class UserService {
         return sendMessage;
     }
 
-    public String sendMoment (HttpSession session) {
-        return "send Moment successfully!";
+    public String sendMoment(HttpSession session, String content) {
+        Date pubtime = new Date();
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        Moment moment = new Moment();
+        moment.setContent(content);
+        moment.setPubtime(pubtime);
+        moment.setUserId(user.getId());
+        moment.setUsername(user.getUsername());
+        userMapper.insertMomentIntoMoment(moment);
+        log.info("sent moment successfully!");
+        return "sent moment successfully!";
     }
 
+    //get own moments
+    public List<Moment> getPersonalMoment(HttpSession session) {
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        List<Moment> moments = userMapper.findMomentsFromMoment(user.getId());
+        log.info("get personal moments successfully!");
+        return moments;
+    }
+
+    //get friends' and own moments together
+    public List<Moment> getFriendsMoment (HttpSession session) {
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        List<User> users= userMapper.findUserFromFriend(user.getId());
+        users.add(user);
+        List<Integer> userIdList = new ArrayList<>();
+        for (User user1 : users) {
+            userIdList.add(user1.getId());
+        }
+        List<Moment> moments = userMapper.findFriendMomentsFromMoment(userIdList);
+        log.info("get friend's moments successfully!");
+        return moments;
+    }
+
+    public String deleteMoment (HttpSession session, Moment moment) {
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        if (user.getId() == moment.getUserId()) {
+            userMapper.deleteMomentFromMoment(moment);
+            log.info("deleted moment successfully!");
+            return "deleted moment successfully!";
+        } else {
+            log.info("you cannot delet other's moment!");
+            return "you cannot delet other's moment!";
+        }
+    }
 }

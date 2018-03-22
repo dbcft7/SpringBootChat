@@ -1,8 +1,5 @@
 package com.am.socket.dao;
-import com.am.socket.model.Captcha;
-import com.am.socket.model.OfflineMessage;
-import com.am.socket.model.User;
-import com.am.socket.model.UserSalt;
+import com.am.socket.model.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -30,5 +27,10 @@ public interface UserMapper {
     void insertMessageIntoOfflineMessage(OfflineMessage offline);
     List<OfflineMessage> findMessageFromOfflineMessage(@Param("receiverId") int receiverId, @Param("receiveState") int receiveState);
     void updateSendStateOfOfflineMessage(OfflineMessage offline);
+
+    void insertMomentIntoMoment(Moment moment);
+    void deleteMomentFromMoment(Moment moment);
+    List<Moment> findMomentsFromMoment(@Param("userId") int userId);
+    List<Moment> findFriendMomentsFromMoment(List<Integer> userId);
 
 }
