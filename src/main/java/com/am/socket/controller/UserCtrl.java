@@ -1,6 +1,7 @@
 package com.am.socket.controller;
 import com.am.socket.model.Moment;
 import com.am.socket.model.User;
+import com.am.socket.service.MomentService;
 import com.am.socket.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,66 +17,69 @@ import java.util.List;
 public class UserCtrl {
 
     @Resource
-    private UserService user;
+    private UserService userService;
+
+    @Resource
+    private MomentService momentService;
 
     @GetMapping("/login")
     public boolean login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid, HttpSession session) throws Exception {
-        return user.findUserIsTrue(username, password, captcha, uuid, session);
+        return userService.userLogin(username, password, captcha, uuid, session);
     }
 
     @GetMapping("/logout")
     public String userLogout(HttpSession session) {
-        return user.userLogout(session);
+        return userService.userLogout(session);
     }
 
     //   parameter from front-end: ["mazy","angle"]
     @PostMapping("/checkUser")
     public List<String> moreUserFind(@RequestBody List<String> users) {
-        return user.moreUserExist(users);
+        return userService.moreUserExist(users);
     }
 
     @PostMapping("/register")
     public String userRegister(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("email") String email) throws Exception {
-        return user.userRegister(username, password, email);
+        return userService.userRegister(username, password, email);
     }
 
     @GetMapping("/addFriend")
     public String userAddFriend(HttpSession session, @RequestParam("friendName") String friendName) {
-        return user.userAddFriend(session, friendName);
+        return userService.userAddFriend(session, friendName);
     }
 
     @GetMapping("/findFriend")
     public List<User> userFindFriend(HttpSession session) {
-        return user.userFindFriend(session);
+        return userService.userFindFriend(session);
     }
 
     @GetMapping("/activate")
     public String userActivate(@RequestParam("email") String email, @RequestParam("activeCode") String activeCode) {
-        return user.processActivate(email, activeCode);
+        return userService.processActivate(email, activeCode);
     }
 
     @GetMapping("/captcha")
     public void generateCaptcha(@RequestParam("uuid") String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        user.generateCaptcha(uuid, request, response);
+        userService.generateCaptcha(uuid, request, response);
     }
 
     @GetMapping("/sendMoment")
     public String sendMoment(@RequestParam("content") String content, HttpSession session) {
-       return user.sendMoment(session, content);
+       return momentService.sendMoment(session, content);
     }
 
     @GetMapping("/getPersonalMoments")
     public List<Moment> getPersonalMoments(HttpSession session) {
-        return user.getPersonalMoment(session);
+        return momentService.getPersonalMoment(session);
     }
 
     @GetMapping("/getFriendsMoments")
     public List<Moment> getFriendsMoments(HttpSession session) {
-        return user.getFriendsMoment(session);
+        return momentService.getFriendsMoment(session);
     }
 
     @GetMapping("/deleteMoment")
     public String deleteMoment(HttpSession session, Moment moment) {
-        return user.deleteMoment(session, moment);
+        return momentService.deleteMoment(session, moment);
     }
 }

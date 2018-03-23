@@ -32,7 +32,10 @@ public class WebSocketService extends TextWebSocketHandler {
     private static final int RECEIVED = 1;
 
     @Resource
-    private UserService user;
+    private UserService userService;
+
+    @Resource
+    private ChatService chatService;
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
@@ -73,7 +76,7 @@ public class WebSocketService extends TextWebSocketHandler {
         User userLogin = JSON.parseObject(message[2],User.class);
         String username = userLogin.getUsername();
         String password = new String(decrypt(userLogin.getPassword(), RSA.getPrivateKey(RSA.privateKeyString)));
-        if (!user.userLoginForWebSocket(username, password)) {
+        if (!userService.userLoginForWebSocket(username, password)) {
             System.out.println("************************** login failed!");
             map.remove(username);
             session.sendMessage(new TextMessage("the username or password is wrong, login failed!"));
@@ -95,7 +98,7 @@ public class WebSocketService extends TextWebSocketHandler {
             for (WebSocketSession sessionSend : map.values()) {
                 handleLoginUsers(sessionSend);
             }
-            List<String> offlineMessages = user.getOfflineMessage(username);
+            List<String> offlineMessages = chatService.getOfflineMessage(username);
             if (offlineMessages != null && offlineMessages.size() != 0){
                 for (String string : offlineMessages) {
                     session.sendMessage(new TextMessage(string));
@@ -110,7 +113,7 @@ public class WebSocketService extends TextWebSocketHandler {
         if (!map.containsValue(session)) {
             session.sendMessage(new TextMessage("You didn't login yet, please login first!"));
         } else {
-            if (!user.findUserFromDB(message[1])) {
+            if (!userService.findUserFromDB(message[1])) {
                 session.sendMessage(new TextMessage("the user you want to send message to is not exist!"));
             } else if (map.get(message[1]) == null) {
                 session.sendMessage(new TextMessage("the user " + message[1] + " is not online now, please send the offline message!"));
@@ -150,10 +153,10 @@ public class WebSocketService extends TextWebSocketHandler {
         if (map.containsKey(message[1])) {
             WebSocketSession sendSession = map.get(message[1]);
             sendSession.sendMessage(new TextMessage(senderName + ": " + message[2]));
-            String send = user.storeOfflineMessage(senderName, message[1], message[2], message[3], RECEIVED);
+            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], RECEIVED);
             session.sendMessage(new TextMessage(send));
         } else {
-            String send = user.storeOfflineMessage(senderName, message[1], message[2], message[3], NOTRECEIVED);
+            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], NOTRECEIVED);
             session.sendMessage(new TextMessage(send));
         }
     }
