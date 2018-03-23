@@ -1,36 +1,45 @@
-let socket;
 let SPLIT = '&';
+
 let LOGIN = 'login';
 let SEND2USER = 'send2User';
 let LOGIN_USERS = 'loginUsers';
-let URL = '127.0.0.1:8080';
-let HTTP_URL = 'http://127.0.0.1';
-let WS_URL = 'ws://127.0.0.1:8080';
 let OFFLINE = "offline";
 
+let HTTP_URL = 'http://127.0.0.1';
+let WS_URL = 'ws://127.0.0.1:8080';
+let URL = '127.0.0.1:8080';
+
+let socket;
 let uuid = '';
 
-if (!window.WebSocket) {
-    window.WebSocket = window.MozWebSocket;
-}
-if (window.WebSocket) {
-    socket = new WebSocket(WS_URL + "/web-socket");
-    socket.onmessage = function(event) {
-        console.log('Message received from server: ' + event.data);
-
-        document.getElementById("content").value += event.data + '\n';
-    };
-    socket.onopen = function(event) {
-        console.log('WebSocket connection opened. Ready to send messages.');
-    };
-    socket.onclose = function(event) {
-        console.log('WebSocket connection closed.');
-    };
-} else {
-    alert("你的浏览器不支持 WebSocket！");
-}
 getCaptcha();
+connectWebSocket();
 
+function connectWebSocket() {
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+    }
+    if (window.WebSocket) {
+        socket = new WebSocket(WS_URL + "/web-socket");
+        socket.onmessage = function(event) {
+            console.log('Message received from server: ' + event.data);
+            displayMsg(event.data);
+        };
+        socket.onopen = function(event) {
+            console.log('WebSocket connection opened. Ready to send messages.');
+        };
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed.');
+        };
+    } else {
+        alert("你的浏览器不支持 WebSocket！");
+    }
+}
+
+function displayMsg(data) {
+    if (data.indexOf())
+        document.getElementById("content").value += data + '\n';
+}
 
 function clearContent() {
     document.getElementById("content").value = '';
@@ -103,17 +112,17 @@ function getCaptcha() {
     xmlhttp.send();
 }
 
-function loginHttp() {
+async function loginHttp() {
     username = document.getElementById("username").value;
     password = document.getElementById("password").value;
     captcha = document.getElementById("captcha").value;
     password = URLencode(encrypt(password));
 
     let xmlhttp = new XMLHttpRequest();
-    requestUrl = '/user/login?username=' + username 
-                    + '&password=' + password 
-                    + '&captcha=' + captcha 
-                    + '&uuid=' + uuid;
+    requestUrl = '/user/login?username=' + username +
+        '&password=' + password +
+        '&captcha=' + captcha +
+        '&uuid=' + uuid;
     xmlhttp.open("GET", requestUrl, true);
     xmlhttp.responseType = "blob";
     xmlhttp.onload = function() {
@@ -122,11 +131,11 @@ function loginHttp() {
         }
     }
     xmlhttp.send();
-    login();
+    login()
 }
 
 function URLencode(sStr) {
-    return escape(sStr).replace(/\+/g, '%2B').replace(/\"/g,'%22').replace(/\'/g, '%27').replace(/\//g,'%2F');  
+    return escape(sStr).replace(/\+/g, '%2B').replace(/\"/g, '%22').replace(/\'/g, '%27').replace(/\//g, '%2F');
 }
 
 function sendOfflineMessage() {
@@ -135,4 +144,23 @@ function sendOfflineMessage() {
     message = OFFLINE + SPLIT + username + SPLIT + msg;
     console.log(message);
     send(message);
+}
+
+function register() {
+    username = document.getElementById("registerUsername").value;
+    password = document.getElementById("registerPassword").value;
+    email = document.getElementById("registerEmail").value;
+    password = URLencode(encrypt(password));
+
+    let xmlhttp = new XMLHttpRequest();
+    requestUrl = '/user/register?username=' + username +
+        '&password=' + password +
+        '&email=' + email;
+    xmlhttp.open("POST", requestUrl, true);
+    xmlhttp.onload = function() {
+        if (this.status == 200) {
+            console.log(this.responseText);
+        }
+    }
+    xmlhttp.send();
 }
