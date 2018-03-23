@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.am.socket.dao.MomentMapper">
+    <insert id="insertMomentIntoMoment" parameterType="Moment">
+        INSERT INTO moments(user_id, username, content, pubtime)
+        VALUES (#{userId}, #{username}, #{content}, #{pubtime})
+    </insert>
+
+    <delete id="deleteMomentFromMoment" parameterType="Moment">
+        DELETE FROM moments
+        WHERE moment_id = #{momentId}
+    </delete>
+
+    <select id="findMomentsFromMoment" parameterType="int" resultType="Moment">
+        SELECT * FROM moments
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="findFriendMomentsFromMoment" resultType="Moment">
+        SELECT * FROM moments
+        WHERE user_id in
+        <foreach item="userId" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+</mapper>

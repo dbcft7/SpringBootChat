@@ -127,15 +127,14 @@ public class UserService {
         }
     }
 
-    public String userAddFriend(HttpSession session, String friendName) {
-        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+    public String userAddFriend(int userId, String friendName) {
         User friendFromAccount = userMapper.findUserFromAccount(friendName);
 
         if (friendFromAccount == null) {
             return "the user you want to add to a friend is not exist!";
         }
 
-        List<User> friendList = userFindFriend(session);
+        List<User> friendList = userFindFriend(userId);
 
         for (User friend : friendList) {
             if (friend.getUsername().equals(friendName)) {
@@ -143,16 +142,13 @@ public class UserService {
             }
         }
 
-        int userId = user.getId();
         int friendId = friendFromAccount.getId();
         userMapper.insertUserIntoFriend(userId, friendId);
         userMapper.insertUserIntoFriend(friendId, userId);
         return "add friend successfully!";
     }
 
-    public List<User> userFindFriend(HttpSession session) {
-        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
-        int userId = user.getId();
+    public List<User> userFindFriend(int userId) {
         List<User> friendList = userMapper.findUserFromFriend(userId);
         return friendList;
     }

@@ -19,8 +19,7 @@ public class UserCtrl {
     @Resource
     private UserService userService;
 
-    @Resource
-    private MomentService momentService;
+    private static final String SESSION_ATTRIBUTE = "user";
 
     @GetMapping("/login")
     public boolean login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid, HttpSession session) throws Exception {
@@ -45,12 +44,16 @@ public class UserCtrl {
 
     @GetMapping("/addFriend")
     public String userAddFriend(HttpSession session, @RequestParam("friendName") String friendName) {
-        return userService.userAddFriend(session, friendName);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        return userService.userAddFriend(userId, friendName);
     }
 
     @GetMapping("/findFriend")
     public List<User> userFindFriend(HttpSession session) {
-        return userService.userFindFriend(session);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        return userService.userFindFriend(userId);
     }
 
     @GetMapping("/activate")
@@ -61,25 +64,5 @@ public class UserCtrl {
     @GetMapping("/captcha")
     public void generateCaptcha(@RequestParam("uuid") String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
         userService.generateCaptcha(uuid, request, response);
-    }
-
-    @GetMapping("/sendMoment")
-    public String sendMoment(@RequestParam("content") String content, HttpSession session) {
-       return momentService.sendMoment(session, content);
-    }
-
-    @GetMapping("/getPersonalMoments")
-    public List<Moment> getPersonalMoments(HttpSession session) {
-        return momentService.getPersonalMoment(session);
-    }
-
-    @GetMapping("/getFriendsMoments")
-    public List<Moment> getFriendsMoments(HttpSession session) {
-        return momentService.getFriendsMoment(session);
-    }
-
-    @GetMapping("/deleteMoment")
-    public String deleteMoment(HttpSession session, Moment moment) {
-        return momentService.deleteMoment(session, moment);
     }
 }

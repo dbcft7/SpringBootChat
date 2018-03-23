@@ -1,5 +1,6 @@
 package com.am.socket.service;
 
+import com.am.socket.dao.ChatMapper;
 import com.am.socket.dao.UserMapper;
 import com.am.socket.model.OfflineMessage;
 import org.slf4j.Logger;
@@ -17,6 +18,9 @@ import java.util.List;
 public class ChatService {
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private ChatMapper chatMapper;
 
     private static final int NOTRECEIVED = 0;
     private static final int RECEIVED = 1;
@@ -47,14 +51,14 @@ public class ChatService {
         offlineMessage.setReceiverId(receiverId);
         offlineMessage.setReceiveState(receiveState);
         offlineMessage.setOfflineMessage(message);
-        userMapper.insertMessageIntoOfflineMessage(offlineMessage);
+        chatMapper.insertMessageIntoOfflineMessage(offlineMessage);
         log.info("*************** store offline message successfully!");
         return "sent offline message successfully!";
     }
 
     public List<String> getOfflineMessage(String receiverName) {
         int receiverId = userMapper.findUserFromAccount(receiverName).getId();
-        List<OfflineMessage> offlineMessages = userMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
+        List<OfflineMessage> offlineMessages = chatMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
         List<String> sendMessage = new ArrayList<>();
         for (OfflineMessage message : offlineMessages) {
             String senderName = userMapper.fineUserIdFromAccount(message.getSenderId()).getUsername();
@@ -63,7 +67,7 @@ public class ChatService {
             message.setReceiveState(RECEIVED);
             Date receivedTime = new Date();
             message.setReceiveTime(receivedTime);
-            userMapper.updateSendStateOfOfflineMessage(message);
+            chatMapper.updateSendStateOfOfflineMessage(message);
         }
         return sendMessage;
     }

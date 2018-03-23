@@ -65,44 +65,5 @@
         WHERE uuid = #{uuid}
     </select>
 
-    <insert id="insertMessageIntoOfflineMessage" parameterType="OfflineMessage">
-        INSERT INTO offline_message(sender_id, receiver_id, offline_message, send_time, receive_state)
-        VALUES (#{senderId}, #{receiverId}, #{offlineMessage}, #{sendTime}, #{receiveState})
-    </insert>
-
-    <select id="findMessageFromOfflineMessage" parameterType="int" resultType="OfflineMessage">
-        SELECT * FROM offline_message
-        WHERE receiver_id = #{receiverId} AND receive_state = #{receiveState}
-    </select>
-
-    <update id="updateSendStateOfOfflineMessage" parameterType="OfflineMessage">
-        UPDATE offline_message SET receive_time = #{receiveTime}, receive_state = #{receiveState}
-        WHERE message_id = #{messageId}
-    </update>
-
-    <insert id="insertMomentIntoMoment" parameterType="Moment">
-        INSERT INTO moments(user_id, username, content, pubtime)
-        VALUES (#{userId}, #{username}, #{content}, #{pubtime})
-    </insert>
-
-    <delete id="deleteMomentFromMoment" parameterType="Moment">
-        DELETE FROM moments
-        WHERE moment_id = #{momentId}
-    </delete>
-
-    <select id="findMomentsFromMoment" parameterType="int" resultType="Moment">
-        SELECT * FROM moments
-        WHERE user_id = #{userId}
-    </select>
-
-    <select id="findFriendMomentsFromMoment" resultType="Moment">
-        SELECT * FROM moments
-        WHERE user_id in
-        <foreach item="userId" index="index" collection="list"
-                 open="(" separator="," close=")">
-            #{userId}
-        </foreach>
-    </select>
-
 </mapper>
 

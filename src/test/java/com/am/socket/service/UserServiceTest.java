@@ -28,6 +28,8 @@ public class UserServiceTest {
     //password for angle
     private String password = "nSn/VK5vWeFcFsUcgmL7GHF/XFaY10sPjktRov4jpx2kIbXQSt/nczT9/pP7xEyYiKKPgoHu+eOVAlK1Hj4ow/1Ip1WImBbuNez8zPwUDp+cq0IViXc8wrtf6S5lUrRK0eVF57CWHAIbVc8Rq5HNzwdGYPdH2Ary9UeJVeuv93M=";
     private String email = "1721591676@qq.com";
+
+    private static final String SESSION_ATTRIBUTE = "user";
     private HttpSession session = new HttpSession() {
         private String key;
         private Object value;
@@ -162,15 +164,19 @@ public class UserServiceTest {
 
     @Test
     public void userAddFriend() {
-        String result = userService.userAddFriend(session, userTwo);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        String result = userService.userAddFriend(userId, userTwo);
         System.out.println(result);
     }
 
     @Test
     public void userFindFriend() throws Exception {
         userExist();
-        List<User> userList = userService.userFindFriend(session);
-        for (User user : userList) {
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        List<User> userList = userService.userFindFriend(userId);
+        for (User user1 : userList) {
             System.out.println(user.getUsername());
         }
     }
@@ -197,14 +203,17 @@ public class UserServiceTest {
     @Test
     public void sendMoment() throws Exception {
         userExist();
-        String content = "hello, I am mazyi!";
-        momentService.sendMoment(session,content);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        String content = "hi, I am mazyi!";
+        momentService.sendMoment(user,content);
     }
 
     @Test
     public void getPersonalMoment() throws Exception {
         userExist();
-        List<Moment> moments = momentService.getPersonalMoment(session);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        List<Moment> moments = momentService.getPersonalMoment(userId);
         for (Moment moment : moments) {
             System.out.println(moment.getUsername() + ": " + moment.getContent());
         }
@@ -213,7 +222,8 @@ public class UserServiceTest {
     @Test
     public void getFriendsMoments() throws Exception {
         userExist();
-        List<Moment> moments = momentService.getFriendsMoment(session);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        List<Moment> moments = momentService.getFriendsMoment(user);
         for (Moment moment : moments) {
             System.out.println(moment.getUsername() + ": " + moment.getContent());
         }
@@ -225,7 +235,9 @@ public class UserServiceTest {
         Moment moment = new Moment();
         moment.setMomentId(2);
         moment.setUserId(27);
-        String string = momentService.deleteMoment(session, moment);
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        int userId = user.getId();
+        String string = momentService.deleteMoment(userId, moment);
     }
 
 }

@@ -24,13 +24,4 @@ public interface UserMapper {
     void insertCaptchaIntoCaptcha(@Param("uuid") String uuid, @Param("captcha") String captcha);
     Captcha findCaptchaFromCaptcha(@Param("uuid") String uuid);
 
-    void insertMessageIntoOfflineMessage(OfflineMessage offline);
-    List<OfflineMessage> findMessageFromOfflineMessage(@Param("receiverId") int receiverId, @Param("receiveState") int receiveState);
-    void updateSendStateOfOfflineMessage(OfflineMessage offline);
-
-    void insertMomentIntoMoment(Moment moment);
-    void deleteMomentFromMoment(Moment moment);
-    List<Moment> findMomentsFromMoment(@Param("userId") int userId);
-    List<Moment> findFriendMomentsFromMoment(List<Integer> userId);
-
 }
