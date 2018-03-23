@@ -58,7 +58,7 @@ public class UserService {
             log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromDB.getUsername()) && passwordHashed.equals(userFromDB.getPassword())) {
-            log.info("login successfully!");
+            log.info("http login successfully!");
             session.setAttribute("user", userFromDB);
             return true;
         } else {
@@ -79,7 +79,7 @@ public class UserService {
             log.info("the user is not exist!");
             return false;
         } else if (username.equals(userFromAccount.getUsername()) && passwordHashed.equals(userFromAccount.getPassword())) {
-            log.info("login successfully!");
+            log.info("webSocket login successfully!");
             return true;
         } else {
             log.info("userLoginForWebSocket: username or password is wrong!");
@@ -171,7 +171,7 @@ public class UserService {
         content.append("\">请点击此链接激活账号</a>");
 
         SendEmail.send(email, content.toString());
-        log.info("email sent successfully!");
+        log.info("To {} email sent successfully!", email);
     }
 
     public String processActivate(String email, String activeCode) {
