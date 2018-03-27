@@ -1,10 +1,7 @@
 package com.am.socket.service;
-import com.am.socket.model.Captcha;
-import com.am.socket.model.OfflineMessage;
-import com.am.socket.model.UserSalt;
+import com.am.socket.model.*;
 import com.am.socket.util.Hash;
 import com.am.socket.dao.UserMapper;
-import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import com.am.socket.util.SendEmail;
 import org.slf4j.Logger;
@@ -34,12 +31,13 @@ public class UserService {
     private static final int ACTIVATE = 1;
     private static final int NOTRECEIVED = 0;
     private static final int RECEIVED = 1;
+    private static final String SESSION_ATTRIBUTE = "user";
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public final static String URL = "http://127.0.0.1:8080/user/activate";
 
-    public boolean findUserIsTrue(String username, String passwordRSA, String captchaString, String uuid, HttpSession session) throws Exception {
+    public boolean userLogin(String username, String passwordRSA, String captchaString, String uuid, HttpSession session) throws Exception {
         User userFromDB = userMapper.findUserFromAccount(username);
         UserSalt userSalt = userMapper.findSaltFromSalt(username);
         String password = new String(decrypt(passwordRSA, RSA.getPrivateKey(RSA.privateKeyString)));
@@ -62,7 +60,7 @@ public class UserService {
             session.setAttribute("user", userFromDB);
             return true;
         } else {
-            log.info("findUserIsTrue: username or password is wrong!");
+            log.info("username or password is wrong!");
             return false;
         }
     }
@@ -129,15 +127,14 @@ public class UserService {
         }
     }
 
-    public String userAddFriend(HttpSession session, String friendName) {
-        User user = (User) session.getAttribute("user");
+    public String userAddFriend(int userId, String friendName) {
         User friendFromAccount = userMapper.findUserFromAccount(friendName);
 
         if (friendFromAccount == null) {
             return "the user you want to add to a friend is not exist!";
         }
 
-        List<User> friendList = userFindFriend(session);
+        List<User> friendList = userFindFriend(userId);
 
         for (User friend : friendList) {
             if (friend.getUsername().equals(friendName)) {
@@ -145,16 +142,13 @@ public class UserService {
             }
         }
 
-        int userId = user.getId();
         int friendId = friendFromAccount.getId();
         userMapper.insertUserIntoFriend(userId, friendId);
         userMapper.insertUserIntoFriend(friendId, userId);
         return "add friend successfully!";
     }
 
-    public List<User> userFindFriend(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        int userId = user.getId();
+    public List<User> userFindFriend(int userId) {
         List<User> friendList = userMapper.findUserFromFriend(userId);
         return friendList;
     }
@@ -216,55 +210,6 @@ public class UserService {
 
         ImageIO.write(bufferedImage, "JPG", response.getOutputStream());
         return uuid;
-    }
-
-    public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime, int receiveState) {
-        if (userMapper.findUserFromAccount(receiverName) == null) {
-            return "the user you want to send message to is not exist!";
-        }
-
-        OfflineMessage offlineMessage = new OfflineMessage();
-        int senderId = userMapper.findUserFromAccount(senderName).getId();
-        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date sendTime = new Date();
-
-        try {
-            sendTime = dateFormat.parse(dateTime);
-            log.info("send time is: " + sendTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        offlineMessage.setSendTime(sendTime);
-        offlineMessage.setSenderId(senderId);
-        offlineMessage.setReceiverId(receiverId);
-        offlineMessage.setReceiveState(receiveState);
-        offlineMessage.setOfflineMessage(message);
-        userMapper.insertMessageIntoOfflineMessage(offlineMessage);
-        log.info("*************** store offline message successfully!");
-        return "sent offline message successfully!";
-    }
-
-    public List<String> getOfflineMessage(String receiverName) {
-        int receiverId = userMapper.findUserFromAccount(receiverName).getId();
-        List<OfflineMessage> offlineMessages = userMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
-        List<String> sendMessage = new ArrayList<>();
-        for (OfflineMessage message : offlineMessages) {
-            String senderName = userMapper.fineUserIdFromAccount(message.getSenderId()).getUsername();
-            String messageFormat = senderName + ": " + message.getOfflineMessage();
-            sendMessage.add(messageFormat);
-            message.setReceiveState(RECEIVED);
-            Date receivedTime = new Date();
-            message.setReceiveTime(receivedTime);
-            userMapper.updateSendStateOfOfflineMessage(message);
-        }
-        return sendMessage;
-    }
-
-    public String sendMoment (HttpSession session) {
-        return "send Moment successfully!";
     }
 
 }

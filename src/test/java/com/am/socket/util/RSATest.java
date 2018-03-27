@@ -23,7 +23,7 @@ import static com.am.socket.util.RSA.generateKeyPair;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class RSATest {
-    private String string = "iloveyou";
+    private String string = "dbcft";
     private org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Test

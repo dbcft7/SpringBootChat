@@ -65,22 +65,5 @@
         WHERE uuid = #{uuid}
     </select>
 
-    <insert id="insertMessageIntoOfflineMessage" parameterType="OfflineMessage">
-        INSERT INTO offline_message(sender_id, receiver_id, offline_message, send_time, receive_state)
-        VALUES (#{senderId}, #{receiverId}, #{offlineMessage}, #{sendTime}, #{receiveState})
-    </insert>
-
-    <select id="findMessageFromOfflineMessage" parameterType="int" resultType="OfflineMessage">
-        SELECT * FROM offline_message
-        WHERE receiver_id = #{receiverId} AND receive_state = #{receiveState}
-    </select>
-
-    <update id="updateSendStateOfOfflineMessage" parameterType="OfflineMessage">
-        UPDATE offline_message SET receive_time = #{receiveTime}, receive_state = #{receiveState}
-        WHERE message_id = #{messageId}
-    </update>
-
-
-
 </mapper>
 
