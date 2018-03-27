@@ -11,7 +11,9 @@
     <script src="../js/jsencrypt.min.js"></script>
     <div id="container" style="width:400px; float:left;">
         <div>
-            <h3>WebSocket 聊天室</h3>
+            <div>
+                <h3>WebSocket 聊天室</h3>
+            </div>
         </div>
         <div style="width:80px; float:left;">
             <b>用户名</b>
@@ -21,12 +23,30 @@
             <img id="captchaImg" style="width:70px; height:20px; margin-top: 5px;" src='' alt='captcha' />
         </div>
         <div>
-            <input type="text" id="username" style="width: 100px">
+            <input type="text" id="username" style="width: 120px">
             <br>
-            <input type="text" id="password" style="width: 100px">
+            <input type="text" id="password" style="width: 120px">
             <br>
-            <input type="text" id="captcha" style="width: 100px">
-            <input type="button" value="登陆" style="width: 60px" onclick="loginHttp()">
+            <input type="text" id="captcha" style="width: 120px">
+            <input type="button" value="登陆" style="width: 60px; margin-left: 5px;" onclick="loginHttp()">
+        </div>
+        <div>
+            <h3>注册</h3>
+        </div>
+        <div style="width:80px; float:left;">
+            <b>用户名</b>
+            <br>
+            <b>密码</b>
+            <br>
+            <b>邮箱</b>
+        </div>
+        <div>
+            <input type="text" id="registerUsername" style="width: 120px">
+            <br>
+            <input type="text" id="registerPassword" style="width: 120px">
+            <br>
+            <input type="text" id="registerEmail" style="width: 120px">
+            <input type="button" value="注册" style="width: 60px; margin-left: 5px;" onclick="register()">
         </div>
     </div>
     <div id="chat" style="width:400px; height:80vh; float:left; margin-top: 30px;">
