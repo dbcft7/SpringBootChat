@@ -46,12 +46,8 @@ public class MomentService {
 
     //get friends' and own moments together
     public List<Moment> getFriendsMoment (User user) {
-        List<User> users= userMapper.findUserFromFriend(user.getId());
-        users.add(user);
-        List<Integer> userIdList = new ArrayList<>();
-        for (User user1 : users) {
-            userIdList.add(user1.getId());
-        }
+        List<Integer> userIdList = userMapper.findUserIdFromFriend(user.getId());
+        userIdList.add(user.getId());
         List<Moment> moments = momentMapper.findFriendMomentsFromMoment(userIdList);
         log.info("get friend's moments successfully!");
         return moments;

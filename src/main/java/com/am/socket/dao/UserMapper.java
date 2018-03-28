@@ -15,6 +15,7 @@ public interface UserMapper {
 
     void insertUserIntoFriend(@Param("userId") int userId, @Param("friendId") int friendId);
     List<User> findUserFromFriend(@Param("userId") int userId);
+    List<Integer> findUserIdFromFriend(@Param("userId") int userId);
 
     void insertSaltIntoSalt(@Param("username") String username, @Param("salt") String salt);
     UserSalt findSaltFromSalt(@Param("username") String username);

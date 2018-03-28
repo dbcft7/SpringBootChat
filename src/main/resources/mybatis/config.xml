@@ -17,6 +17,7 @@
         <typeAlias alias="Captcha" type="com.am.socket.model.Captcha"/>
         <typeAlias alias="OfflineMessage" type="com.am.socket.model.OfflineMessage"/>
         <typeAlias alias="Moment" type="com.am.socket.model.Moment"/>
+        <typeAlias alias="Comment" type="com.am.socket.model.Comment"/>
     </typeAliases>
 
 </configuration>
