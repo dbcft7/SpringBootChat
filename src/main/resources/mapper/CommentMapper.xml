@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.am.socket.dao.CommentMapper">
+    <insert id="insertCommentIntoComments" parameterType="Comment">
+        INSERT INTO comments (comment_id, moment_id, target_comment_id, user_id, username, pubtime, comment, target_user_id, target_username)
+        VALUES (#{commentId}, #{momentId}, #{targetCommentId}, #{userId}, #{username}, #{pubtime}, #{comment}, #{targetUserId}, #{targetUsername})
+    </insert>
+
+    <delete id="deleteCommentFromComments" parameterType="int">
+        DELETE FROM comments
+        WHERE comment_id = #{commentId}
+    </delete>
+
+    <select id="findMoreCommentFromComments" parameterType="int" resultType="Comment">
+        SELECT * FROM comments
+        WHERE moment_id = #{momentId}
+    </select>
+
+    <select id="findCommentFromComments" parameterType="int" resultType="Comment">
+        SELECT * FROM comments
+        WHERE comment_id = #{commentId}
+    </select>
+
+</mapper>

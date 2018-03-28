@@ -40,6 +40,11 @@
         AND friend.user_id = #{userId}
     </select>
 
+    <select id="findUserIdFromFriend" parameterType="int" resultType="Integer">
+        SELECT friend_id FROM friend
+        WHERE user_id = #{userId}
+    </select>
+
     <insert id="insertSaltIntoSalt" parameterType="String">
         INSERT INTO salt(username, salt)
         VALUES (#{username}, #{salt})

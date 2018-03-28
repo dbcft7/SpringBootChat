@@ -3,6 +3,7 @@ package com.am.socket.service;
 
 import com.am.socket.Application;
 import com.am.socket.dao.UserMapper;
+import com.am.socket.model.Comment;
 import com.am.socket.model.Moment;
 import com.am.socket.model.User;
 import com.am.socket.model.UserSalt;
@@ -33,6 +34,7 @@ public class UserServiceTest {
     private HttpSession session = new HttpSession() {
         private String key;
         private Object value;
+
         @Override
         public long getCreationTime() {
             return 0;
@@ -137,11 +139,14 @@ public class UserServiceTest {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private CommentService commentService;
+
     @Test
     public void userExist() throws Exception {
-        boolean result = userService.userLogin(username, password,"TW6T", "02a123d2-acf0-46b2-9ba7-43eaa0b34f30", session);
+        boolean result = userService.userLogin(username, password, "TW6T", "02a123d2-acf0-46b2-9ba7-43eaa0b34f30", session);
         User user = userMapper.findUserFromAccount(username);
-        session.setAttribute("user",user);
+        session.setAttribute("user", user);
         System.out.println(result);
     }
 
@@ -187,7 +192,7 @@ public class UserServiceTest {
         UserSalt userSalt = new UserSalt();
         userSalt.setSalt("123456");
         userSalt.setUsername("angle");
-        userMapper.insertSaltIntoSalt("123456","angle");
+        userMapper.insertSaltIntoSalt("123456", "angle");
         System.out.println("successful!");
     }
 
@@ -205,7 +210,7 @@ public class UserServiceTest {
         userExist();
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         String content = "hi, I am mazyi!";
-        momentService.sendMoment(user,content);
+        momentService.sendMoment(user, content);
     }
 
     @Test
@@ -237,9 +242,52 @@ public class UserServiceTest {
         moment.setUserId(27);
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         int userId = user.getId();
-        String string = momentService.deleteMoment(userId, moment);
+        String result = momentService.deleteMoment(userId, moment);
+        System.out.println(result);
     }
 
+    @Test
+    public void sendCommentToMoment() throws Exception {
+        userExist();
+        int momentId = 1;
+        String commentContent = "Comment to Moment!";
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        commentService.sendComment(momentId, user.getId(), user.getUsername(), commentContent);
+    }
+
+    @Test
+    public void sendCommentToComment() throws Exception {
+        userExist();
+        int momentId = 1;
+        int TargetCommentId = 2;
+        String commentContent = "Comment to Comment!";
+        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        commentService.sendComment(momentId, TargetCommentId, user.getId(), user.getUsername(), commentContent);
+    }
+
+    @Test
+    public void deleteComment() throws Exception {
+        int commentId = 3;
+        commentService.deleteComment(commentId);
+    }
+
+    @Test
+    public void getComment() {
+        int momentId = 1;
+        List<Comment> result = commentService.getComments(momentId);
+        for (Comment comment : result) {
+            System.out.println(comment.getUsername() + " comment to " + comment.getTargetUsername() + ": " + comment.getComment());
+        }
+    }
+
+    @Test
+    public void getFriend() {
+        int userId = 28;
+        List<Integer> friendList = userMapper.findUserIdFromFriend(userId);
+        for (int id : friendList) {
+            System.out.println(id);
+        }
+    }
 }
 
 
