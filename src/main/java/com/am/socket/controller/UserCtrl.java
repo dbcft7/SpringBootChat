@@ -1,7 +1,6 @@
 package com.am.socket.controller;
-import com.am.socket.model.Moment;
+
 import com.am.socket.model.User;
-import com.am.socket.service.MomentService;
 import com.am.socket.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +17,6 @@ public class UserCtrl {
 
     @Resource
     private UserService userService;
-
-    private static final String SESSION_ATTRIBUTE = "user";
 
     @GetMapping("/login")
     public boolean login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid, HttpSession session) throws Exception {
@@ -44,14 +41,14 @@ public class UserCtrl {
 
     @GetMapping("/addFriend")
     public String userAddFriend(HttpSession session, @RequestParam("friendName") String friendName) {
-        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        User user = (User) session.getAttribute(User.SESSION_ATTRIBUTE);
         int userId = user.getId();
         return userService.userAddFriend(userId, friendName);
     }
 
     @GetMapping("/findFriend")
     public List<User> userFindFriend(HttpSession session) {
-        User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
+        User user = (User) session.getAttribute(User.SESSION_ATTRIBUTE);
         int userId = user.getId();
         return userService.userFindFriend(userId);
     }

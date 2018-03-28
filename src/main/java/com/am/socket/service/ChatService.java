@@ -16,16 +16,12 @@ import java.util.List;
 
 @Service
 public class ChatService {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Resource
     private UserMapper userMapper;
-
     @Resource
     private ChatMapper chatMapper;
-
-    private static final int NOTRECEIVED = 0;
-    private static final int RECEIVED = 1;
-
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public String storeOfflineMessage(String senderName, String receiverName, String message, String dateTime, int receiveState) {
         if (userMapper.findUserFromAccount(receiverName) == null) {
@@ -58,13 +54,13 @@ public class ChatService {
 
     public List<String> getOfflineMessage(String receiverName) {
         int receiverId = userMapper.findUserFromAccount(receiverName).getId();
-        List<OfflineMessage> offlineMessages = chatMapper.findMessageFromOfflineMessage(receiverId, NOTRECEIVED);
+        List<OfflineMessage> offlineMessages = chatMapper.findMessageFromOfflineMessage(receiverId, OfflineMessage.NOT_RECEIVED);
         List<String> sendMessage = new ArrayList<>();
         for (OfflineMessage message : offlineMessages) {
             String senderName = userMapper.fineUserIdFromAccount(message.getSenderId()).getUsername();
             String messageFormat = senderName + ": " + message.getOfflineMessage();
             sendMessage.add(messageFormat);
-            message.setReceiveState(RECEIVED);
+            message.setReceiveState(OfflineMessage.RECEIVED);
             Date receivedTime = new Date();
             message.setReceiveTime(receivedTime);
             chatMapper.updateSendStateOfOfflineMessage(message);

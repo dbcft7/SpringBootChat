@@ -1,6 +1,7 @@
 package com.am.socket.service;
 
 import com.alibaba.fastjson.JSON;
+import com.am.socket.model.OfflineMessage;
 import com.am.socket.model.User;
 import com.am.socket.util.RSA;
 import org.springframework.web.socket.CloseStatus;
@@ -21,15 +22,12 @@ import static com.am.socket.util.RSA.decrypt;
 public class WebSocketService extends TextWebSocketHandler {
 
     private Map<String,WebSocketSession> map = new HashMap<>();
-    private Map<WebSocketSession, String> session2user = new HashMap<>();
 
     private static final String SPLIT = "&";
     private static final String LOGIN = "login";
     private static final String SEND2USER = "send2User";
     private static final String LOGIN_USERS = "loginUsers";
     private static final String OFFLINE_MESSAGE = "offline";
-    private static final int NOTRECEIVED = 0;
-    private static final int RECEIVED = 1;
 
     @Resource
     private UserService userService;
@@ -153,10 +151,10 @@ public class WebSocketService extends TextWebSocketHandler {
         if (map.containsKey(message[1])) {
             WebSocketSession sendSession = map.get(message[1]);
             sendSession.sendMessage(new TextMessage(senderName + ": " + message[2]));
-            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], RECEIVED);
+            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], OfflineMessage.RECEIVED);
             session.sendMessage(new TextMessage(send));
         } else {
-            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], NOTRECEIVED);
+            String send = chatService.storeOfflineMessage(senderName, message[1], message[2], message[3], OfflineMessage.NOT_RECEIVED);
             session.sendMessage(new TextMessage(send));
         }
     }

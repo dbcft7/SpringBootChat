@@ -16,14 +16,12 @@ import java.util.List;
 
 @Service
 public class MomentService {
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Resource
     private UserMapper userMapper;
-
     @Resource
     private MomentMapper momentMapper;
-
-    private static final String SESSION_ATTRIBUTE = "user";
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public String sendMoment(User user, String content) {
         Date pubtime = new Date();

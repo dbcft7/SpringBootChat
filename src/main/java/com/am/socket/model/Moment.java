@@ -3,10 +3,12 @@ package com.am.socket.model;
 import java.util.Date;
 
 public class Moment {
+
     private int momentId;
     private int userId;
     private String username;
     private String content;
+    private Date pubtime;
 
     public int getMomentId() {
         return momentId;
@@ -47,7 +49,5 @@ public class Moment {
     public void setPubtime(Date pubtime) {
         this.pubtime = pubtime;
     }
-
-    private Date pubtime;
 
 }

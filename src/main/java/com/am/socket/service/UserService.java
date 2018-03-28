@@ -26,16 +26,12 @@ import static com.am.socket.util.RSA.decrypt;
 
 @Service
 public class UserService {
-    @Resource
-    private UserMapper userMapper;
-    private static final int ACTIVATE = 1;
-    private static final int NOTRECEIVED = 0;
-    private static final int RECEIVED = 1;
-    private static final String SESSION_ATTRIBUTE = "user";
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public final static String URL = "http://127.0.0.1:8080/user/activate";
+    private final static String URL = "http://127.0.0.1:8080/user/activate";
+
+    @Resource
+    private UserMapper userMapper;
 
     public boolean userLogin(String username, String passwordRSA, String captchaString, String uuid, HttpSession session) throws Exception {
         User userFromDB = userMapper.findUserFromAccount(username);
@@ -171,7 +167,7 @@ public class UserService {
     public String processActivate(String email, String activeCode) {
         User user = userMapper.findEmailFromAccount(email);
         if (user != null) {
-            if (user.getActive() != ACTIVATE) {
+            if (user.getActive() != User.ACTIVATE) {
                 if (user.getActiveCode().equals(activeCode)) {
                     userMapper.activeAccount(user.getId());
                     return "Activated successfully!";

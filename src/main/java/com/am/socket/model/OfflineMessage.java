@@ -3,12 +3,17 @@ package com.am.socket.model;
 import java.util.Date;
 
 public class OfflineMessage {
+
+    public static final int NOT_RECEIVED = 0;
+    public static final int RECEIVED = 1;
+
     private int messageId;
     private int senderId;
     private int receiverId;
     private String offlineMessage;
     private Date sendTime;
     private Date receiveTime;
+    private int receiveState;
 
     public int getMessageId() {
         return messageId;
@@ -65,6 +70,4 @@ public class OfflineMessage {
     public void setReceiveState(int receiveState) {
         this.receiveState = receiveState;
     }
-
-    private int receiveState;
 }

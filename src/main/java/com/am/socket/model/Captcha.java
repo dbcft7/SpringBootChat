@@ -2,6 +2,7 @@ package com.am.socket.model;
 
 public class Captcha {
     private String uuid;
+    private String captcha;
 
     public String getUuid() {
         return uuid;
@@ -18,7 +19,5 @@ public class Captcha {
     public void setCaptcha(String captcha) {
         this.captcha = captcha;
     }
-
-    private String captcha;
 
 }
