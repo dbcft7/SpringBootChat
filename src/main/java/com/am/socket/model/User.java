@@ -1,6 +1,11 @@
 package com.am.socket.model;
 
 public class User {
+    public static final String SESSION_ATTRIBUTE = "user";
+
+    public static final int ACTIVATE = 1;
+
+
     private String username;
     private String password;
     private int userId;
