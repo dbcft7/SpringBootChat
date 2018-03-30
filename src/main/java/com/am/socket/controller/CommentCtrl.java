@@ -3,7 +3,6 @@ package com.am.socket.controller;
 import com.am.socket.model.Comment;
 import com.am.socket.model.User;
 import com.am.socket.service.CommentService;
-import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
