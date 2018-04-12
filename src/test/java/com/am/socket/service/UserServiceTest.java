@@ -29,6 +29,8 @@ public class UserServiceTest {
     //password for angle
     private String password = "nSn/VK5vWeFcFsUcgmL7GHF/XFaY10sPjktRov4jpx2kIbXQSt/nczT9/pP7xEyYiKKPgoHu+eOVAlK1Hj4ow/1Ip1WImBbuNez8zPwUDp+cq0IViXc8wrtf6S5lUrRK0eVF57CWHAIbVc8Rq5HNzwdGYPdH2Ary9UeJVeuv93M=";
     private String email = "1721591676@qq.com";
+    private String uuid = "123456";
+    private String captcha = "KW2C";
 
     private static final String SESSION_ATTRIBUTE = "user";
     private HttpSession session = new HttpSession() {
@@ -144,7 +146,7 @@ public class UserServiceTest {
 
     @Test
     public void userExist() throws Exception {
-        boolean result = userService.userLogin(username, password, "TW6T", "02a123d2-acf0-46b2-9ba7-43eaa0b34f30", session);
+        boolean result = userService.userLogin(username, password, captcha, uuid, session);
         User user = userMapper.findUserFromAccount(username);
         session.setAttribute("user", user);
         System.out.println(result);
@@ -156,6 +158,7 @@ public class UserServiceTest {
         String result = userService.userRegister(username, password, email);
         System.out.println(result);
     }
+
 
     @Test
     public void userActivate() {
