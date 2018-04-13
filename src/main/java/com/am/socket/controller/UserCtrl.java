@@ -1,6 +1,7 @@
 package com.am.socket.controller;
 
 import com.am.socket.model.User;
+import com.am.socket.service.RedisService;
 import com.am.socket.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,9 @@ public class UserCtrl {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisService redisService;
 
     @GetMapping("/login")
     public boolean login(@RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid, HttpSession session) throws Exception {
@@ -60,6 +64,6 @@ public class UserCtrl {
 
     @GetMapping("/captcha")
     public void generateCaptcha(@RequestParam("uuid") String uuid, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        userService.generateCaptcha(uuid, request, response);
+        redisService.generateCaptcha(uuid, request, response);
     }
 }
