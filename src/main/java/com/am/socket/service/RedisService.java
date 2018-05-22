@@ -43,8 +43,6 @@ public class RedisService {
         ValueOperations<String,Object> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(uuid, captcha, 180, TimeUnit.SECONDS);
 
-
-
         ImageIO.write(bufferedImage, "JPG", response.getOutputStream());
         return uuid;
     }
