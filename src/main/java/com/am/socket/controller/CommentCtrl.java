@@ -20,24 +20,24 @@ public class CommentCtrl {
     private static final String SESSION_ATTRIBUTE = "user";
 
     @GetMapping("/sendCommentToMoment")
-    public String sendCommentToMoment(@RequestParam("momentId") int momentId, @RequestParam("commentContent") String commentContent, HttpSession session) {
+    public String sendCommentToMoment(@RequestParam("momentId") String momentId, @RequestParam("commentContent") String commentContent, HttpSession session) {
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         return commentService.sendComment(momentId, user.getId(), user.getUsername(), commentContent);
     }
 
     @GetMapping("/sendCommentToComment")
-    public String sendCommentToComment(@RequestParam("momentId") int momentId, @RequestParam("targetCommentId") int targetCommentId, @RequestParam("commentContent") String commentContent, HttpSession session) {
+    public String sendCommentToComment(@RequestParam("momentId") String momentId, @RequestParam("targetCommentId") String targetCommentId, @RequestParam("commentContent") String commentContent, HttpSession session) {
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         return commentService.sendComment(momentId, targetCommentId, user.getId(), user.getUsername(), commentContent);
     }
 
     @GetMapping("/getCommentList")
-    public List<Comment> getCommentList(@RequestParam("momentId") int momentId, HttpSession session) {
+    public List<Comment> getCommentList(@RequestParam("momentId") String momentId, HttpSession session) {
         return commentService.getComments(momentId);
     }
 
     @GetMapping("/deleteComment")
-    public String deleteComment(@RequestParam("CommentId") int commentId) {
+    public String deleteComment(@RequestParam("CommentId") String commentId) {
         return commentService.deleteComment(commentId);
     }
 }

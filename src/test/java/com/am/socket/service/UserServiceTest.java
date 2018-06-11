@@ -7,8 +7,10 @@ import com.am.socket.model.Comment;
 import com.am.socket.model.Moment;
 import com.am.socket.model.User;
 import com.am.socket.model.UserSalt;
+import com.am.socket.dao.CommentMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -144,6 +146,9 @@ public class UserServiceTest {
     @Resource
     private CommentService commentService;
 
+    @Autowired
+    private CommentMapper commentMapper;
+
     @Test
     public void userExist() throws Exception {
         boolean result = userService.userLogin(username, password, captcha, uuid, session);
@@ -252,17 +257,19 @@ public class UserServiceTest {
     @Test
     public void sendCommentToMoment() throws Exception {
         userExist();
-        int momentId = 1;
-        String commentContent = "Comment to Moment!";
+        String momentId = "1";
+        String commentContent = "Say hi!";
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         commentService.sendComment(momentId, user.getId(), user.getUsername(), commentContent);
+        System.out.println();
     }
+
 
     @Test
     public void sendCommentToComment() throws Exception {
         userExist();
-        int momentId = 1;
-        int TargetCommentId = 2;
+        String momentId = "1";
+        String TargetCommentId = "5b1eeba6b30284114c483d97";
         String commentContent = "Comment to Comment!";
         User user = (User) session.getAttribute(SESSION_ATTRIBUTE);
         commentService.sendComment(momentId, TargetCommentId, user.getId(), user.getUsername(), commentContent);
@@ -270,13 +277,13 @@ public class UserServiceTest {
 
     @Test
     public void deleteComment() throws Exception {
-        int commentId = 3;
+        String commentId = "5b1eeba6b30284114c483d97";
         commentService.deleteComment(commentId);
     }
 
     @Test
     public void getComment() {
-        int momentId = 1;
+        String momentId = "1";
         List<Comment> result = commentService.getComments(momentId);
         for (Comment comment : result) {
             System.out.println(comment.getUsername() + " comment to " + comment.getTargetUsername() + ": " + comment.getComment());

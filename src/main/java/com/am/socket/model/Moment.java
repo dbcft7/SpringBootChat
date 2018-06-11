@@ -1,14 +1,26 @@
 package com.am.socket.model;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Date;
 
 public class Moment {
+
+    @Id
+    private int id;
 
     private int momentId;
     private int userId;
     private String username;
     private String content;
     private Date pubtime;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getMomentId() {
         return momentId;

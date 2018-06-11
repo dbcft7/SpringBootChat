@@ -1,11 +1,16 @@
 package com.am.socket.model;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Date;
 
 public class Comment {
-    private int commentId;
-    private int momentId;
-    private int targetCommentId;
+
+    @Id
+    private String commentId;
+
+    private String momentId;
+    private String targetCommentId;
     private int userId;
     private String username;
     private Date pubtime;
@@ -13,27 +18,27 @@ public class Comment {
     private int targetUserId;
     private String targetUsername;
 
-    public int getCommentId() {
+    public  String getCommentId() {
         return commentId;
     }
 
-    public void setCommentId(int commentId) {
+    public void setCommentId(String commentId) {
         this.commentId = commentId;
     }
 
-    public int getMomentId() {
+    public String getMomentId() {
         return momentId;
     }
 
-    public void setMomentId(int momentId) {
+    public void setMomentId(String momentId) {
         this.momentId = momentId;
     }
 
-    public int getTargetCommentId() {
+    public String getTargetCommentId() {
         return targetCommentId;
     }
 
-    public void setTargetCommentId(int targetCommentId) {
+    public void setTargetCommentId(String targetCommentId) {
         this.targetCommentId = targetCommentId;
     }
 

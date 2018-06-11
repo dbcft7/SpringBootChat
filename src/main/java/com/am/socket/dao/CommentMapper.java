@@ -1,13 +1,11 @@
 package com.am.socket.dao;
 
 import com.am.socket.model.Comment;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface CommentMapper {
-    void insertCommentIntoComments(Comment comment);
-    void deleteCommentFromComments(@Param("commentId") int commentId);
-    List<Comment> findMoreCommentFromComments(@Param("momentId") int momentId);
-    Comment findCommentFromComments(@Param("commentId") int commentId);
+public interface CommentMapper extends MongoRepository<Comment, String>{
+    List<Comment> findByMomentId(String momentId);
+    Comment findByCommentId(String commentId);
 }
